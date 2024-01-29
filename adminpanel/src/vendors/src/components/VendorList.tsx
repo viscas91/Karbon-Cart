@@ -26,7 +26,7 @@ const rows = [
   { id: 9, title: 'Roxie', url: 'Harvey', price: 65 },
 ];
 
-export const VendorList: React.FC = () => {
+const VendorList: React.FC = () => {
   return (
     <>
     <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>Vendors</Typography>
@@ -48,4 +48,6 @@ export const VendorList: React.FC = () => {
     </Paper>
     </>
   );
-}   
+}
+
+export default VendorList;

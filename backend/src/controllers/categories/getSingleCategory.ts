@@ -20,11 +20,9 @@ export const getSingleCategory = async (req: Request, res: Response) => {
 };
 
 export const getSingleSubCategory = async (req: Request, res: Response) => {
-    const categoryId = req.params.categoryId;
 	const category = await SubCategory.findOne({
         where: {
             id: req.params.id,
-            categoryId
         }
     });
 
@@ -34,20 +32,12 @@ export const getSingleSubCategory = async (req: Request, res: Response) => {
 
     return res.status(200).json({
         success: true,
-        category,
+        subCategory: category,
     });
 };
 
 export const getSingleChildCategory = async (req: Request, res: Response) => {
-    const categoryId = req.params.categoryId;
-    const subCategoryId = req.params.subCategoryId;
-	const category = await ChildCategory.findOne({
-        where: {
-            id: req.params.id,
-            categoryId,
-            subCategoryId
-        }
-    });
+	const category = await ChildCategory.findByPk(req.params.id);
 
 	if (!category) {
 		throw new NotFoundError("Sub Category not found.");
@@ -55,6 +45,6 @@ export const getSingleChildCategory = async (req: Request, res: Response) => {
 
     return res.status(200).json({
         success: true,
-        category,
+        childCategory: category,
     });
 };

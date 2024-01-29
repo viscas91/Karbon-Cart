@@ -1,16 +1,16 @@
-    import { Navigate, Outlet, useLocation } from "react-router-dom";
-    import { useAuthUser } from "../hooks/useAuth";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAuthUser } from "../hooks/useAuth";
 
-    const AuthRequired: React.FC = () => {
-        const location = useLocation();
+const AuthRequired: React.FC = () => {
+    const location = useLocation();
 
-        const role = useAuthUser();
+    const role = useAuthUser();
 
-        return role ? (
-            <Outlet />
-        ) : (
-            <Navigate to="/login" state={{ from: location }} replace />
-        );
-    };
+    return role ? (
+        <Outlet />
+    ) : (
+        <Navigate to="/login" state={{ from: location }} replace />
+    );
+};
 
-    export default AuthRequired;
+export default AuthRequired;

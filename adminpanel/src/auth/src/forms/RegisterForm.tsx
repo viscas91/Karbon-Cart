@@ -37,7 +37,7 @@ export const strengthColor = (count: number): PasswordStrength => {
 
 const USERNAME_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 
-export const RegisterForm: React.FC = () => {
+const RegisterForm: React.FC = () => {
     const navigate = useNavigate();
 
     const [level, setLevel] = useState<PasswordStrength>();
@@ -463,3 +463,5 @@ export const RegisterForm: React.FC = () => {
         </>
     )
 }
+
+export default RegisterForm;

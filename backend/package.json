@@ -21,6 +21,7 @@
     "connect-session-knex": "^4.0.0",
     "connect-session-sequelize": "^7.1.7",
     "connect-sqlite3": "^0.9.13",
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
     "express-async-handler": "^1.2.0",
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/connect-sqlite3": "^0.9.5",
+    "@types/cors": "^2.8.17",
     "@types/ejs": "^3.1.5",
     "@types/jest": "^29.5.11",
     "@types/jsonwebtoken": "^9.0.5",

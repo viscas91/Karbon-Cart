@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 import seq from 'connect-session-sequelize';
 import morgan from 'morgan';
 import path from 'path';
+import cors from 'cors';
 
 import { productRouter } from '../routes/product.routes';
 import './passport.config';
@@ -17,6 +18,8 @@ import { authRouter } from '../routes/auth.routes';
 import { vendorRouter } from '../routes/vendor.routes';
 import { categoryRouter } from '../routes/category.routes';
 import { CartRouter } from '../routes/cart.route';
+import { subCategoryRouter } from '../routes/subcategories.routes';
+import { childCategoryRouter } from '../routes/childcategories.routes';
 
 declare global {
     namespace NodeJS {
@@ -41,6 +44,12 @@ const sqliteStore = seq(session.Store);
 
 const app = express();
 dotenv.config();
+
+app.use(cors({
+    origin: 'http://localhost:5173',  // Replace with the origin(s) you want to allow
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, 
+}))
 
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
@@ -75,6 +84,8 @@ app.get('/', async (req: Request, res: Response) => {
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/categories', categoryRouter);
+app.use('/api/v1/subcategories', subCategoryRouter);
+app.use('/api/v1/childcategories', childCategoryRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/vendors', vendorRouter);
 app.use('/api/v1/cart', CartRouter);

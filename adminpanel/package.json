@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^2.0.1",
     "dayjs": "^1.11.10",
     "formik": "^2.4.5",
+    "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
@@ -29,6 +30,7 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/zxcvbn": "^4.4.4",

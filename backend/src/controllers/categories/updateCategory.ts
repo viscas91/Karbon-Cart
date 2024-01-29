@@ -29,12 +29,11 @@ export const updateCategory = async (req: Request, res: Response) => {
 };
 
 export const updateSubCategory = async (req: Request, res: Response) => {
-	const { categoryId, id } = req.params;
+	const { id } = req.params;
 
 	const category = await SubCategory.findOne({
 		where: {
 			id,
-			categoryId,
 		}
 	});
 
@@ -49,7 +48,6 @@ export const updateSubCategory = async (req: Request, res: Response) => {
         { 
 			where: { 
 				id,
-				categoryId
 			} 
 		}
 	);
@@ -62,13 +60,11 @@ export const updateSubCategory = async (req: Request, res: Response) => {
 };
 
 export const updateChildCategory = async (req: Request, res: Response) => {
-	const { categoryId, subCategoryId, id } = req.params;
+	const { id } = req.params;
 
 	const category = await ChildCategory.findOne({
 		where: {
 			id,
-			categoryId,
-			subCategoryId
 		}
 	});
 
@@ -82,9 +78,7 @@ export const updateChildCategory = async (req: Request, res: Response) => {
 		{ ...fieldsToUpdate },
         { 
 			where: { 
-				id: subCategoryId,
-				categoryId,
-				subCategoryId
+				id,
 			} 
 		}
 	);

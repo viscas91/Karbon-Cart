@@ -21,7 +21,7 @@ import * as Yup from "yup";
 // import useTitle from "../../../hooks/useTitle";
 import { useResendVerifyEmailMutation } from "../features/authApiSlice";
 
-export const ResendEmailTokenPage = () => {
+const ResendEmailTokenPage = () => {
 
 	const navigate = useNavigate();
 	const goBack = () => navigate(-1);
@@ -174,3 +174,5 @@ export const ResendEmailTokenPage = () => {
 		</>
 	);
 };
+
+export default ResendEmailTokenPage;

@@ -3,7 +3,7 @@ import { Button, Stack, Typography } from "@mui/material";
 // import { FaCheckCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-export const VerifiedPage = () => {
+const VerifiedPage = () => {
 	// useTitle("Verify User - MERN Invoice");
 	return (
 		<Stack
@@ -38,3 +38,5 @@ export const VerifiedPage = () => {
 		</Stack>
 	);
 };
+
+export default VerifiedPage;

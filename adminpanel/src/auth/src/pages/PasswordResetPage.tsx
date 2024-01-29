@@ -33,7 +33,7 @@ import zxcvbn, { ZXCVBNResult } from "zxcvbn";
 import { PasswordStrength, strengthColor } from "../forms/RegisterForm";
 // import AuthWrapper from "../forms/AuthWrapper";
 
-export const PasswordResetPage = () => {
+const PasswordResetPage = () => {
 	// useTitle("Request Reset Password");
 	const navigate = useNavigate();
 
@@ -354,3 +354,5 @@ export const PasswordResetPage = () => {
 		</>
 	);
 };
+
+export default PasswordResetPage;

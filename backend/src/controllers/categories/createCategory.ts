@@ -14,8 +14,9 @@ export const createCategory = async (req: Request, res: Response) => {
 		throw new BadRequestError('Fill the required fields');
 	}
 
-	const lowercase: string = title.lowerCase();
-    const slug = slugify(lowercase);
+	const slug = slugify(title, {
+		lower: true
+	});
 
 	const categoryExists = await Category.findOne({ where: { slug } } );
 
@@ -43,12 +44,15 @@ export const createCategory = async (req: Request, res: Response) => {
 export const createSubCategory = async (req: Request, res: Response) => {
 	const { title, icon, categoryId } = req.body;
 
+	console.log(req.body)
+
 	if(!title || !icon || !categoryId){
 		throw new BadRequestError('Fill the required fields');
 	}
 
-	const lowercase: string = title.lowerCase();
-    const slug = slugify(lowercase);
+    const slug = slugify(title, {
+		lower: true
+	});
 
 	const subCategoryExists = await SubCategory.findOne({ where: { slug } } );
 
@@ -81,8 +85,9 @@ export const createChildCategory = async (req: Request, res: Response) => {
 		throw new BadRequestError('Fill the required fields');
 	}
 
-	const lowercase: string = title.lowerCase();
-    const slug = slugify(lowercase);
+	const slug = slugify(title, {
+		lower: true
+	});
 
 	const childCategoryExists = await ChildCategory.findOne({ where: { slug } } );
 

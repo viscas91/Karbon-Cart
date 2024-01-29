@@ -5,7 +5,7 @@ import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Box, Button, FormHelperText, Grid, OutlinedInput, Paper, Stack, TextField, Typography } from "@mui/material";
 
-export const VendorCreate: React.FC = () => {
+const VendorCreate: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     // const goback = navigate(-1);
@@ -504,3 +504,5 @@ export const VendorCreate: React.FC = () => {
         </>
     )
 }
+
+export default VendorCreate;

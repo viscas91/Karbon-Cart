@@ -15,7 +15,7 @@ interface DataGridOnChangeProps {
     pageSize: number
 }
 
-export const CategoryList: React.FC = () => {
+const CategoryList: React.FC = () => {
     // const navigate = useNavigate();
     // const location = useLocation();
     // const goback = () => navigate(-1);
@@ -54,4 +54,6 @@ export const CategoryList: React.FC = () => {
     </Paper>
     </>
   );
-}   
+}
+
+export default CategoryList;

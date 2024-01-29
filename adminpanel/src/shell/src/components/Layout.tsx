@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Navbar from "../../../common/src/components/Navbar";
 import Grid from '@mui/material/Grid';
 import { Container } from '@mui/material';
-import { Sidebar } from '../../../common/src/components/Sidebar';
+import Sidebar from '../../../common/src/components/Sidebar';
 
 const Layout: React.FC = () => {
     return (

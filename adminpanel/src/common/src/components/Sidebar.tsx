@@ -1,6 +1,6 @@
 import { Box, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
-export const Sidebar = () => {
+const Sidebar = () => {
   return (
     <Box sx={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#FFF' }}>
         <nav aria-label="main mailbox folders">
@@ -41,3 +41,5 @@ export const Sidebar = () => {
     </Box>
   );
 }
+
+export default Sidebar;

@@ -1,33 +1,21 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useCreateCategoryMutation, useGetSingleCategoryQuery, useUpdateCategoryMutation } from "../features/categorySlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetSingleCategoryQuery, useUpdateCategoryMutation } from "../features/categorySlice";
 import { useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Box, Button, FormHelperText, Grid, Paper, TextField, Typography } from "@mui/material";
 
-export const CategoryEditCreate: React.FC = () => {
+const CategoryEdit: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const { slug } = useParams();
-    console.log(slug)
+    const { id } = useParams();
     // const goback = () => navigate(-1);
 
     const [title, setTitle] = useState<string>('');
     const [icon, setIcon] = useState<string>('');
+    
+    const { data } = id ? useGetSingleCategoryQuery(id) : { data: null };
 
-    const from = location.state?.from?.pathname || "/categories";
-
-    const [createCategory, { isSuccess, isLoading }] = useCreateCategoryMutation();
-    const { data } = slug ? useGetSingleCategoryQuery(slug) : { data: null };
-    // const data = {
-    //     category: {
-    //         id: 1,
-    //         title: 'sometitle',
-    //         slug: 'someSlug',
-    //         icon: 'some.png'
-    //     }
-    // }
-    const [updateCategory, { isSuccess: isUpdateSuccess, isLoading: isUpdateLoading, data:updateData }] = useUpdateCategoryMutation();
+    const [updateCategory, { isSuccess: isUpdateSuccess, isLoading, data:updateData }] = useUpdateCategoryMutation();
 
     useEffect(() => {
         const category = data?.category;
@@ -43,14 +31,9 @@ export const CategoryEditCreate: React.FC = () => {
         }
     }, [isUpdateSuccess, navigate, updateData]);
 
-    useEffect(() => {
-        if (isSuccess) {
-            navigate(from, { replace: true });
-        }
-    }, [isSuccess, navigate, from]);
-
     return (
         <>
+            {!isLoading && title && (
             <Formik
                 initialValues={{
                     title: title || '',
@@ -80,11 +63,7 @@ export const CategoryEditCreate: React.FC = () => {
 
                 onSubmit={async (values, { setStatus, setSubmitting }) => {
                     try {
-                        if(slug){
-                            await updateCategory({ id: data.category.id, ...values }).unwrap();                           
-                        } else {
-                            await createCategory(values).unwrap();
-                        }
+                        await updateCategory({ id: data.category.id, ...values }).unwrap();                           
                         setStatus({ success: true });
                         setSubmitting(false);
                     } catch (err: any) {
@@ -104,11 +83,11 @@ export const CategoryEditCreate: React.FC = () => {
                     values,
                 }) => (
                     <Box component='section'>
-                        <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>{ slug ? 'Edit Category' : 'Add New Category'}</Typography>
+                        <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>Edit Category</Typography>
 
                         <Paper sx={{ padding: 4 }}>
                             <Box component='form' noValidate autoComplete="off" onSubmit={handleSubmit}>
-                                {isLoading || isUpdateLoading ? (
+                                {isLoading ? (
                                     <div>Loading...</div>
                                 ) : (
                                     <Grid container spacing={2}>
@@ -120,7 +99,7 @@ export const CategoryEditCreate: React.FC = () => {
                                                     type='text'
                                                     name="title"
                                                     label='title'
-                                                    value={title || values.title}
+                                                    value={values.title}
                                                     onBlur={handleBlur}
                                                     onChange={handleChange}
                                                     fullWidth
@@ -165,7 +144,7 @@ export const CategoryEditCreate: React.FC = () => {
                                                     )}
                                                 </Box>
 
-                                            <Button variant="contained" type="submit">Submit</Button>
+                                            <Button variant="contained" type="submit">Update</Button>
                                         </Grid>
                                     </Grid>
                                 )}
@@ -174,6 +153,9 @@ export const CategoryEditCreate: React.FC = () => {
                     </Box>
                 )}
             </Formik>
+            )}
         </>
     )
 }
+
+export default CategoryEdit;

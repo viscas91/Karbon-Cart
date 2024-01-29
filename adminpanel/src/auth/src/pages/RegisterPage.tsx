@@ -12,9 +12,9 @@ import { Link } from "react-router-dom";
 // import GoogleLogin from "../../../components/GoogleLogin";
 // import StyledDivider from "../../../components/StyledDivider";
 // import AuthWrapper from "../forms/AuthWrapper";
-import { RegisterForm } from "../forms/RegisterForm";
+import RegisterForm from "../forms/RegisterForm";
 
-export const RegisterPage = () => (
+const RegisterPage = () => (
 		<Container
 			component="main"
 			maxWidth="sm"
@@ -113,3 +113,5 @@ export const RegisterPage = () => (
 			</Grid>
 		</Container>
 );
+
+export default RegisterPage;

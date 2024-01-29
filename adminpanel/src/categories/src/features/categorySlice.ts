@@ -10,18 +10,32 @@ export const categoryApiSlice = baseApiSlice.injectEndpoints({
             providesTags: ["Category"]
         }),
         getAllSubCategories: builder.query({
+            query: (page?) => {
+                const queryParams = page !== undefined ? `?page=${page}` : '';
+                return `/subcategories/all${queryParams}`;
+            },
+            providesTags: ["SubCategory"]
+        }),
+        getAllSubCategoriesByCategoryId: builder.query({
             query: (categoryId, page?: number | void) => {
                 const queryParams = page !== undefined ? `?page=${page}` : '';
-                return `/categories/${categoryId}/all${queryParams}`;
+                return `/subcategories/${categoryId}/all${queryParams}`;
             },
             providesTags: ["SubCategory"]
         }),
         getAllChildCategories: builder.query({
-            query: (subCategoryId: number, categoryId: number | void, page?: number | void) => {
+            query: (page?) => {
                 const queryParams = page !== undefined ? `?page=${page}` : '';
-                return `/categories/${categoryId}/${subCategoryId}/all${queryParams}`;
+                return `/childcategories/all${queryParams}`;
             },
             providesTags: ["ChildCategory"]
+        }),
+        getAllChildCategoriesByCategoryId: builder.query({
+            query: (subCategoryId: number | void, page?: number | void) => {
+                const queryParams = page !== undefined ? `?page=${page}` : '';
+                return `/childcategories/${subCategoryId}/all${queryParams}`;
+            },
+            providesTags: ["SubCategory"]
         }),
         createCategory: builder.mutation({
             query: (category) => ({
@@ -32,52 +46,52 @@ export const categoryApiSlice = baseApiSlice.injectEndpoints({
             invalidatesTags: ["Category"]
         }),
         createSubCategory: builder.mutation({
-            query: ({ categoryId , ...fields}) => ({
-                url: `/categories/${categoryId}`,
+            query: (fields) => ({
+                url: `/subcategories`,
                 method: "POST",
                 body: fields
             }),
             invalidatesTags: ["SubCategory"]
         }),
         createChildCategory: builder.mutation({
-            query: ({ categoryId, subCategoryId , ...fields}) => ({
-                url: `/categories/${categoryId}/${subCategoryId}`,
+            query: (fields) => ({
+                url: `/childCategories`,
                 method: "POST",
                 body: fields
             }),
             invalidatesTags: ["ChildCategory"]
         }),
         getSingleCategory: builder.query({
-            query: (categoryId) => `/categories/${categoryId}`,
+            query: (id) => `/categories/${id}`,
             providesTags: ["Category"]
         }),
         getSingleSubCategory: builder.query({
-            query: ({ categoryId, subCategoryId }) => `/categories/${categoryId}/${subCategoryId}`,
+            query: (id) => `/subcategories/${id}`,
             providesTags: ["SubCategory"]
         }),
         getSingleChildCategory: builder.query({
-            query: ({ categoryId, subCategoryId, ChildCategoryId }) => `/categories/${categoryId}/${subCategoryId}/${ChildCategoryId}`,
+            query: (id) => `/childcategories/${id}`,
             providesTags: ["ChildCategory"]
         }),
         updateCategory: builder.mutation({
             query: ({ id, ...fields }) => ({
-                url: `/category/${id}`,
+                url: `/categories/${id}`,
                 method: 'PATCH',
                 body: fields
             }),
             invalidatesTags: ["Category"]
         }),
         updateSubCategory: builder.mutation({
-            query: ({ categoryId, subCategoryId, ...fields }) => ({
-                url: `/category/${categoryId}/${subCategoryId}`,
+            query: ({ id, ...fields }) => ({
+                url: `/subcategories/${id}`,
                 method: 'PATCH',
                 body: fields
             }),
             invalidatesTags: ["SubCategory"]
         }),
         updateChildCategory: builder.mutation({
-            query: ({ categoryId, subCategoryId, childCategoryId, ...fields }) => ({
-                url: `/category/${categoryId}/${subCategoryId}/${childCategoryId}`,
+            query: ({ id, ...fields }) => ({
+                url: `/childcategories/${id}`,
                 method: 'PATCH',
                 body: fields
             }),
@@ -91,15 +105,15 @@ export const categoryApiSlice = baseApiSlice.injectEndpoints({
             invalidatesTags: ['Category']
         }),
         deleteSubCategory: builder.mutation({
-            query: ({ categoryId, subCategoryId }) => ({
-                url: `/categories/${categoryId}/${subCategoryId}`,
+            query: (id) => ({
+                url: `/subcategories/${id}`,
                 method: 'DELETE'
             }),
             invalidatesTags: ['SubCategory']
         }),
         deleteChildCategory: builder.mutation({
-            query: ({ categoryId, subCategoryId, childCategoryId }) => ({
-                url: `/categories/${categoryId}/${subCategoryId}/${childCategoryId}`,
+            query: (id) => ({
+                url: `/childcategories/${id}`,
                 method: 'DELETE'
             }),
             invalidatesTags: ['ChildCategory']
@@ -116,6 +130,7 @@ export const {
 
     useCreateSubCategoryMutation,
     useGetAllSubCategoriesQuery,
+    useGetAllSubCategoriesByCategoryIdQuery,
     useGetSingleSubCategoryQuery,
     useUpdateSubCategoryMutation,
     useDeleteSubCategoryMutation,

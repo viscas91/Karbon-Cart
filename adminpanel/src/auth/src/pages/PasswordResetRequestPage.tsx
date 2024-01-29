@@ -22,7 +22,7 @@ import * as Yup from "yup";
 // import AuthWrapper from "../forms/AuthWrapper";
 import { usePasswordResetRequestMutation } from "../features/authApiSlice";
 
-export const PasswordResetRequestPage = () => {
+const PasswordResetRequestPage = () => {
 	const navigate = useNavigate();
 	// -1 means go back to the previous page where you came from
 	const goBack = () => navigate(-1);
@@ -192,3 +192,5 @@ export const PasswordResetRequestPage = () => {
 		</>
 	);
 };
+
+export default PasswordResetRequestPage;

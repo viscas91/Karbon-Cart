@@ -11,7 +11,8 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useGetAllCategoriesQuery } from '../../../categories/src/features/categorySlice';
+import { useGetAllCategoriesQuery, useGetAllChildCategoriesQuery, useGetAllSubCategoriesQuery } from '../../../categories/src/features/categorySlice';
+import { ChildCategoryType, SubCategoryType } from '../../../../../backend/src/utils/types/category.types';
 
 interface CategoryType {
     id: number,
@@ -22,7 +23,7 @@ interface CategoryType {
     updatedAt: string
 }
 
-export const ProductCreate: React.FC = () => {
+const ProductCreate: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { productId } = useParams();
@@ -32,7 +33,7 @@ export const ProductCreate: React.FC = () => {
     const [sku, setSku] = useState<string>('');
     const [thumb, setThumb] = useState();
     const [vendorId, setVendorId] = useState();
-    const [categoryId, setCategoryId] = useState();
+    const [categoryId, setCategoryId] = useState<number>();
     const [subCategoryId, setSubCategoryId] = useState();
     const [childCategory, setChildCategory] = useState();
     const [brandId, setBrandId] = useState();
@@ -50,11 +51,48 @@ export const ProductCreate: React.FC = () => {
     const [seoTitle, setSeoTitle] = useState();
     const [seoDescription, setSeoDescription] = useState();
 
+    const [categories, setCategories] = useState<CategoryType[]>([]);
+    const [subCategories, setSubCategories] = useState<SubCategoryType[]>([]);
+    const [childCategories, setChildCategories] = useState<ChildCategoryType[]>([]);
+
     const from = location.state?.from?.pathname || "/products";
 
     const [createProduct, { isSuccess, isLoading }] = useCreateProductMutation();
     const { data } = useGetSingleProductQuery(productId);
-    const { data: categoryData } = useGetAllCategoriesQuery();
+    const { data: categoriesData } = useGetAllCategoriesQuery();
+    let subCategoriesData: SubCategoryType[];
+    let childCategoriesData: ChildCategoryType[];
+    if(categoryId){
+        const { data } = useGetAllSubCategoriesQuery(categoryId);
+        subCategoriesData = data.subCategories;
+    }
+
+    if(categoryId && subCategoryId){
+        const { data } = useGetAllChildCategoriesQuery(categoryId, subCategoryId);
+        childCategoriesData = data.childCategories;
+    }
+
+    useEffect(() => {
+        if (categoriesData) {
+          setCategories(categoriesData.categories);
+        }
+      }, [categoriesData]);
+      console.log(categories)
+    
+      useEffect(() => {
+        if(subCategoriesData){
+            setSubCategories(subCategoriesData);
+        }
+      }, [categoryId, subCategories]);
+      console.log(subCategories)
+    
+      useEffect(() => {
+        if(childCategoriesData){
+            setChildCategories(childCategoriesData);
+        }
+      }, [categoryId, subCategoryId, childCategories]);
+
+    console.log(childCategories);
 
     useEffect(() => {
         const product = data?.product;
@@ -313,11 +351,16 @@ export const ProductCreate: React.FC = () => {
                                                                 value={categoryId || values.category_id}
                                                                 name="category_id"
                                                                 onBlur={handleBlur}
-                                                                onChange={handleChange}
+                                                                onChange={
+                                                                    (e) => {
+                                                                        const id = Number(e.target.value)
+                                                                        setCategoryId(id)
+                                                                        handleChange(e)
+                                                                    }
+                                                                }
                                                                 label="Category"
-                                                                inputProps={{}}
                                                             >
-                                                                {categoryData && categoryData.categories ? categoryData.categories.map((category: CategoryType)=> {
+                                                                {categories ? categories.map((category: CategoryType)=> {
                                                                     return <MenuItem value={category.id}>{category.title}</MenuItem>
                                                                 }): ''}
                                                             </Select>
@@ -347,9 +390,10 @@ export const ProductCreate: React.FC = () => {
                                                                 onBlur={handleBlur}
                                                                 onChange={handleChange}
                                                                 placeholder="Sub Category"
-                                                                inputProps={{}}
                                                             >
-                                                                <MenuItem value='1'>Some sub category</MenuItem>
+                                                                {subCategories ? subCategories.map((category)=> {
+                                                                    return <MenuItem value={category.id}>{category.title}</MenuItem>
+                                                                }): ''}
                                                             </Select>
                                                         </FormControl>
                                                         {touched.sub_category_id &&
@@ -377,7 +421,9 @@ export const ProductCreate: React.FC = () => {
                                                                 onChange={handleChange}
                                                                 label="Child Category"
                                                             >
-                                                                <MenuItem value='2'>ds</MenuItem>
+                                                                {childCategories ? childCategories.map((category)=> {
+                                                                    return <MenuItem value={category.id}>{category.title}</MenuItem>
+                                                                }): ''}
                                                             </Select>
                                                         </FormControl>
                                                         {touched.child_category_id &&
@@ -779,3 +825,5 @@ export const ProductCreate: React.FC = () => {
         </>
     )
 }
+
+export default ProductCreate;

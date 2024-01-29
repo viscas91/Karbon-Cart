@@ -48,7 +48,8 @@ export const Category = sequelize.define<CategoryInstance>(
         },
     },
     {
-        tableName: 'categories'
+        tableName: 'categories',
+        freezeTableName: true
     }
 );
 
@@ -76,15 +77,16 @@ export const SubCategory = sequelize.define<SubCategoryInstance>(
         },
         categoryId: {
             allowNull: false,
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             references: {
-                model: 'Category',
-                key: 'pkid'
+                model: Category,
+                key: 'id'
             }
         }
     },
     {
-        tableName: 'sub_categories'
+        tableName: 'sub_categories',
+        freezeTableName: true
     }
 );
 
@@ -114,7 +116,7 @@ export const ChildCategory = sequelize.define<ChildCategoryInstance>(
             allowNull: false,
             type: DataTypes.INTEGER,
             references: {
-                model: 'Category',
+                model: Category,
                 key: 'id'
             }
         },
@@ -122,12 +124,13 @@ export const ChildCategory = sequelize.define<ChildCategoryInstance>(
             allowNull: false,
             type: DataTypes.INTEGER,
             references: {
-                model: 'SubCategory',
+                model: SubCategory,
                 key: 'id'
             }
         }
     },
     {
-        tableName: 'child_categories'
+        tableName: 'child_categories',
+        freezeTableName: true
     }
 );
