@@ -4,6 +4,7 @@ import verifyUserEmail from '../controllers/auth/verifyEmailController';
 import { loginUser } from '../controllers/auth/loginController';
 import { logoutUser } from '../controllers/auth/logoutController';
 import { newAccessToken } from '../controllers/auth/refreshTokenController';
+import { checkAuth } from '../middlewares/isAuthenticated';
 
 const router = express.Router();
 

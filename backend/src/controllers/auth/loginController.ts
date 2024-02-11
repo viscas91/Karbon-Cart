@@ -9,9 +9,11 @@ import { UserStatus } from '../../utils/enums/user.utils';
 export const loginUser = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    const existingUser = await User.findOne({ where: { email }});
+    if (!email || !password) {
+        throw new BadRequestError("Email and password are required.");
+    }
 
-    console.log(existingUser?.refreshToken)
+    const existingUser = await User.findOne({ where: { email: email }});
 
     if(!existingUser || !(await Password.compare(existingUser.password, password))){
         systemLogs.error("Incorrect email or password");
@@ -26,69 +28,67 @@ export const loginUser = async (req: Request, res: Response) => {
         throw new BadRequestError("You account is not activated, check mail or contact support");
     }
     
-    if(existingUser && (await Password.compare(existingUser.password, password))){
-        const accessToken = jwt.sign(
-            {
-                id: existingUser.id,
-                role: existingUser.role
-            },
-            process.env.JWT_ACCESS_SECRET_KEY!,
-            {
-                expiresIn: "10m"
-            }
-        )
+    if (existingUser && (await Password.compare(existingUser.password, password))) {
+		const accessToken = jwt.sign(
+			{
+				id: existingUser.id,
+				role: existingUser.role,
+			},
+			process.env.JWT_ACCESS_SECRET_KEY as string,
+			{ expiresIn: "10m" }
+		);
 
-        const newRefreshToken = jwt.sign(
-            { id: existingUser.id },
-            process.env.JWT_REFRESH_SECRET_KEY!,
-            { expiresIn: '1d' }
-        )
+		const newRefreshToken = jwt.sign(
+			{
+    				id: existingUser.id,
+			},
+			process.env.JWT_REFRESH_SECRET_KEY as string,
+			{ expiresIn: "1d" }
+		);
 
-        const cookies = req.cookies;
+		const cookies = req.cookies;
 
-        let newRefreshTokenArray = !cookies?.jwt
-			? existingUser.refreshToken
-			: (existingUser.refreshToken as string[])!.filter((refT) => refT !== cookies.jwt);
+        let newRefreshTokenArray = !cookies?.jwt ? existingUser.refreshToken : '';
 
-        if(cookies?.jwt){
-            const refreshToken = cookies.jwt;
-            const existingRefreshToken = await User.findOne({ where: { refreshToken: refreshToken }});
+		if (cookies?.jwt) {
+			const refreshToken = cookies.jwt;
+			const existingRefreshToken = await User.findOne({
+				where: { refreshToken }
+			});
 
-            if(existingRefreshToken){
-                newRefreshTokenArray = [];
-            }
-
-            const options = {
-                httpOnly: false,
-                maxAge: 24 * 60 * 60 * 1000,
-                secure: false,
-                sameSite: "None" as "none"
-            }
-
-            res.clearCookie("jwt", options);
-        }
+			if (!existingRefreshToken) {
+				const options = {
+                    httpOnly: true,
+                    maxAge: 24 * 60 * 60 * 1000,
+                    secure: true,
+                    sameSite: "None" as "none",
+                };
     
-        existingUser.refreshToken = [...(newRefreshTokenArray as string[]), newRefreshToken];
-        await existingUser.save();
-
-        const options = {
-            httpOnly: false,
-            maxAge: 24 * 60 * 60 * 1000,
-            secure: false,
-            sameSite: "None" as "none"
+                res.clearCookie("jwt", options);
+			}
+		} else {
+            existingUser.refreshToken = newRefreshToken;
+		    await existingUser.save();
         }
 
-        res.cookie("jwt", newRefreshToken, options);
+		const options = {
+			httpOnly: true,
+			maxAge: 24 * 60 * 60 * 1000,
+			secure: true,
+			sameSite: "None" as "none",
+		};
 
-        res.json({
-            success: true,
-            firstName: existingUser.firstName,
-            lastName: existingUser.lastName,
-            username: existingUser.username,
-            provider: existingUser.provider,
-            avatar: existingUser.avatar,
-            accessToken
-        });
+		res.cookie("jwt", newRefreshToken, options);
+
+		res.json({
+			success: true,
+			firstName: existingUser.firstName,
+			lastName: existingUser.lastName,
+			username: existingUser.username,
+			provider: existingUser.provider,
+			avatar: existingUser.avatar,
+			accessToken,
+		});
     } else {
         throw new BadRequestError("Invalid credentials");
     }

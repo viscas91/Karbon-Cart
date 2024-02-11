@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { Vendor } from "../../models/mysql/Vendor";
+import { Product } from "../../models/mysql/Product";
 
 // $-title   Get a Single Vendor belonging to a User
 // $-path    GET /api/v1/vendor/:id
 // $-auth    Private
 
 const getSingleProduct = async (req: Request, res: Response) => {
-	const product = await Vendor.findByPk(req.params.id);
+	const product = await Product.findByPk(req.params.id);
 
 	if (!product) {
 		res.status(204);

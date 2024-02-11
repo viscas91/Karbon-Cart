@@ -23,9 +23,7 @@ const logoutUser = async (req: Request, res: Response) => {
 		return res.sendStatus(204);
 	}
 
-	existingUser.refreshToken = (existingUser.refreshToken as string[])!.filter(
-		(refT) => refT !== refreshToken
-	);
+	existingUser.refreshToken = '';
 	await existingUser.save();
 
 	res.clearCookie("jwt", {

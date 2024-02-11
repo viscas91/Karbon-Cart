@@ -19,13 +19,13 @@ const Cart = sequelize.define<CartInstance>(
         },
         id: {
             allowNull: false,
-            type: DataTypes.UUIDV4,
+            type: DataTypes.UUID,
             defaultValue: () => uuidV4(),
             unique: true
         },
         customerId: {
             allowNull: false,
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             references: {
                 model: User,
                 key: 'pkid'
@@ -33,6 +33,7 @@ const Cart = sequelize.define<CartInstance>(
         }
     },
     {
+        timestamps: true,
         tableName: 'cart'
     }
 );

@@ -7,26 +7,10 @@ import { deleteCategory, deleteSubCategory } from '../controllers/categories/del
 
 const router = express.Router();
 
-// category
 router.get('/all', getAllCategories);
 router.get('/:id', getSingleCategory);
 router.post('/', createCategory);
 router.patch('/:id', updateCategory);
 router.delete('/:id', deleteCategory);
-
-// // sub category
-// router.get('/subcategories/all', getAllSubCategories);
-// router.get('/:categoryId/all', getAllSubCategoriesByCategoryID);
-// router.get('/:categoryId/:id', getSingleSubCategory);
-// router.post('/:categoryId', createSubCategory);
-// router.patch('/:categoryId/:id', updateSubCategory);
-// router.delete('/:categoryId/:id', deleteSubCategory);
-
-// // child category
-// router.get('/:categoryId/:subCategoryId/all', getAllChildCategories);
-// router.get('/:categoryId/:subCategoryId/:id', getSingleChildCategory);
-// router.post('/:categoryId/:subCategoryId', createChildCategory);
-// router.patch('/:categoryId/:subCategoryId/:id', updateChildCategory);
-// router.delete('/:categoryId/:subCategoryId/:id', deleteCategory);
 
 export { router as categoryRouter };

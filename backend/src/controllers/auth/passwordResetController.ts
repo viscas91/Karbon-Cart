@@ -1,10 +1,10 @@
-import asyncHandler from "express-async-handler";
 import { User } from "../../models/mysql/User.js";
 import { VerifyResetToken } from "../../models/mysql/VerifyResetTokenModel.js";
 import { SendEmailOptions, sendEmail } from "../../utils/sendMail.js";
 import { Request, Response } from "express";
+import { randomBytes } from "crypto";
+
 const domainURL = process.env.DOMAIN;
-const { randomBytes } = await import("crypto");
 
 // $-title   Send password reset email link
 // $-path    POST /api/v1/auth/reset_password_request
@@ -67,7 +67,7 @@ const resetPasswordRequest = async (req: Request, res: Response) => {
 // $-path    POST /api/v1/auth/reset_password
 // $-auth    Public
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req: Request, res: Response) => {
 	const { password, passwordConfirm, userId, emailToken } = req.body;
 
 	if (!password) {

@@ -17,7 +17,7 @@ const updateProduct = async (req: Request, res: Response) => {
 
 	if (product.createdBy !== (req.user as UserType).id) {
 		throw new NotAuthorized(
-			"You are not authorized to update this vendor's information"
+			"You are not authorized to perform this action"
 		);
 	}
 

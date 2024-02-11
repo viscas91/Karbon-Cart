@@ -11,7 +11,7 @@ import { UserType } from "../../utils/types/common.types";
 
 export const newAccessToken = async (req: Request, res: Response) => {
 	const cookies = req.cookies;
-
+	
 	if (!cookies?.jwt) {
 		return res.sendStatus(401);
 	}
@@ -39,24 +39,16 @@ export const newAccessToken = async (req: Request, res: Response) => {
 				if (err) {
 					return res.sendStatus(403);
 				}
-				await User.update({ refreshToken: [] }, { where: {id: (decoded as UserType).id } })
+				await User.update({ refreshToken: '' }, { where: {id: (decoded as UserType).id } })
 			}
 		);
 		return res.sendStatus(403);
 	}
 
-	const newRefreshTokenArray = (existingUser.refreshToken as string[])!.filter(
-		(refT) => refT !== refreshToken
-	);
-
 	jwt.verify(
 		refreshToken,
 		process.env.JWT_REFRESH_SECRET_KEY!,
 		async (err: any, decoded: any) => {
-			if (err) {
-                await User.update({ refreshToken: [...newRefreshTokenArray] }, { where: { id: existingUser.pkid } })
-			}
-
 			if (err || existingUser.id!.toString() !== decoded.id) {
 				return res.sendStatus(403);
 			}
@@ -76,7 +68,7 @@ export const newAccessToken = async (req: Request, res: Response) => {
 				{ expiresIn: "1d" }
 			);
 
-            await User.update({ refreshToken: [...newRefreshTokenArray, newRefreshToken] }, { where: { id: existingUser.id } })
+            await User.update({ refreshToken: newRefreshToken }, { where: { id: existingUser.id } })
 
 			const options = {
 				httpOnly: true,

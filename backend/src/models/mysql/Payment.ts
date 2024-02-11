@@ -19,7 +19,7 @@ const Payment = sequelize.define<PaymentInstance>(
         },
         id: {
             allowNull: false,
-            type: DataTypes.UUIDV4,
+            type: DataTypes.UUID,
             defaultValue: () => uuidV4(),
             unique: true
         },
@@ -45,10 +45,13 @@ const Payment = sequelize.define<PaymentInstance>(
         },
         transactionId: {
             allowNull: false,
-            type: DataTypes.STRING
+            type: DataTypes.UUID,
+            defaultValue: () => uuidV4(),
+            unique: true
         }
     },
     {
+        timestamps: true,
         tableName: 'payments',
     }
 );
@@ -56,7 +59,7 @@ const Payment = sequelize.define<PaymentInstance>(
 
 Payment.belongsTo(Order, {
     foreignKey: 'orderId',
-    as: 'order', // Alias for the association
+    as: 'order',
 });
 
 export { Payment };

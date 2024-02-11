@@ -20,13 +20,13 @@ const OrderItem = sequelize.define<OrderItemInstance>(
         },
         id: {
             allowNull: false,
-            type: DataTypes.UUIDV4,
+            type: DataTypes.UUID,
             defaultValue: () => uuidV4(),
             unique: true
         },
         orderId: {
             allowNull: false,
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             references: {
                 model: Order,
                 key: 'pkid'
@@ -34,7 +34,11 @@ const OrderItem = sequelize.define<OrderItemInstance>(
         },
         productId: {
             allowNull: false,
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            references: {
+                model: Product,
+                key: 'pkid'
+            }
         },
         quantity: {
             allowNull: false,
@@ -50,18 +54,9 @@ const OrderItem = sequelize.define<OrderItemInstance>(
         }
     },
     {
+        timestamps: true,
         tableName: 'order_items',
     }
 )
-
-OrderItem.belongsTo(Order, {
-    foreignKey: 'orderId',
-    as: 'order', // Alias for the association
-});
-
-OrderItem.belongsTo(Product, {
-    foreignKey: 'productId',
-    as: 'product', // Alias for the association
-});
 
 export { OrderItem };

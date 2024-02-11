@@ -2,32 +2,42 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { User } from "../models/mysql/User";
 import { UserType } from "../utils/types/common.types";
+import { NotAuthorized } from "../utils/errors/notAuthorized";
 
-export const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
-  let jwt_token: string;
+type CustomRequest = Request & { role?: string }
 
-  const authHeader = req.headers.authorization || req.headers.Authorization;
+export const checkAuth = async (req: CustomRequest, res: Response, next: NextFunction) => {
+	let jwt_token: string;
 
-  if (!(typeof authHeader === 'string' && authHeader.startsWith('Bearer'))) return res.sendStatus(401);
+	const authHeader = req.headers.authorization || req.headers.Authorization;
+	console.log(authHeader)
 
-  if(typeof authHeader === 'string' && authHeader && authHeader.startsWith("Bearer")){
-    jwt_token = authHeader.split(" ")[1];
+	if (!authHeader || (Array.isArray(authHeader) && !authHeader[0]?.startsWith("Bearer"))) {
+		return res.sendStatus(401);
+	}
 
-    jwt.verify(
-      jwt_token,
-      process.env.JWT_ACCESS_SECRET_KEY!,
-      async (err, decoded) => {
-        if(err){
-          // console.log(err);
-          res.sendStatus(403);
-        };
+	if (authHeader && (typeof authHeader === 'string' || authHeader[0]?.startsWith("Bearer"))) {
+		jwt_token = Array.isArray(authHeader) ? authHeader[0].split(" ")[1] : authHeader.split(" ")[1];
 
-        const userId = (decoded as JwtPayload).id
+		jwt.verify(
+			jwt_token,
+			process.env.JWT_ACCESS_SECRET_KEY as string,
+			{ algorithms: ['HS256'] },
+			async (err, decoded) => {
+				if (err) {
+					console.log(err)
+					return res.sendStatus(403);
+				}
 
-        req.user = (await User.findOne({ where: { id: userId } })!) as UserType;
-        req.role = (decoded as JwtPayload).role
-        next();
-      }
-    )
-  }
-}
+				const userId = (decoded as UserType).id;
+				req.user = await User.findOne({
+					where: {
+						id: userId
+					}
+				})! || undefined;
+				req.role = (decoded as UserType).role;
+				next();
+			}
+		);
+	}
+};

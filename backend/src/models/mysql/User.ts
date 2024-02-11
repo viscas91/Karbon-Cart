@@ -72,24 +72,11 @@ export const User = sequelize.define<UserInstance>(
         },
         refreshToken: {
             allowNull: true,
-            type: DataTypes.STRING,
-            get() {
-                // Parse the stored value when retrieving it
-                const value = this.getDataValue('refreshToken')!;
-                try {
-                  return JSON.parse(value as string);
-                } catch (error) {
-                  // Handle the case where parsing fails
-                  return value;
-                }
-              },
-              set(value) {
-                // Store the value as a JSON string
-                this.setDataValue('refreshToken', JSON.stringify(value));
-              },
+            type: DataTypes.TEXT,
         }
     },
     {
+        timestamps: true,
         tableName: 'users'
     }
 );

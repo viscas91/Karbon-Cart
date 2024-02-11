@@ -23,8 +23,8 @@ export type UserType = {
     password: string,
     provider: string,
     isEmailVerified: boolean,
-    passwordChangedAt: Date,
-    refreshToken?: string[] | string | undefined,
+    passwordChangedAt?: Date,
+    refreshToken?: string,
     createdAt?: string,
     updatedAt?: string
 }

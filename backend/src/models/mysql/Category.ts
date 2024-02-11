@@ -48,6 +48,7 @@ export const Category = sequelize.define<CategoryInstance>(
         },
     },
     {
+        timestamps: true,
         tableName: 'categories',
         freezeTableName: true
     }
@@ -85,6 +86,7 @@ export const SubCategory = sequelize.define<SubCategoryInstance>(
         }
     },
     {
+        timestamps: true,
         tableName: 'sub_categories',
         freezeTableName: true
     }
@@ -130,6 +132,7 @@ export const ChildCategory = sequelize.define<ChildCategoryInstance>(
         }
     },
     {
+        timestamps: true,
         tableName: 'child_categories',
         freezeTableName: true
     }

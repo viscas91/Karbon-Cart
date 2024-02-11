@@ -19,7 +19,7 @@ export const Product = sequelize.define<ProductInstance>(
         },
         id: {
             allowNull: false,
-            type: DataTypes.UUIDV4,
+            type: DataTypes.UUID,
             defaultValue: () => uuidV4(),
             unique: true
         },
@@ -40,23 +40,23 @@ export const Product = sequelize.define<ProductInstance>(
             allowNull: false,
             type: DataTypes.STRING
         },
-        vendor_id: {
+        vendorId: {
             allowNull: true,
             type: DataTypes.INTEGER
         },
-        category_id: {
+        categoryId: {
             allowNull: false,
             type: DataTypes.INTEGER,
         },
-        sub_category_id: {
+        subCategoryId: {
             allowNull: true,
             type: DataTypes.INTEGER
         },
-        child_category_id: {
+        childCategoryId: {
             allowNull: true,
             type: DataTypes.INTEGER
         },
-        brand_id: {
+        brandId: {
             allowNull: false,
             type: DataTypes.INTEGER
         },
@@ -70,7 +70,7 @@ export const Product = sequelize.define<ProductInstance>(
         },
         unitWeight: {
           allowNull: true,
-          type: DataTypes.NUMBER  
+          type: DataTypes.DOUBLE  
         },
         isApproved: {
             allowNull: true,
@@ -92,7 +92,7 @@ export const Product = sequelize.define<ProductInstance>(
             allowNull: false,
             type: DataTypes.INTEGER
         },
-        short_description: {
+        shortDescription: {
             allowNull: false,
             type: DataTypes.TEXT
         },
@@ -100,7 +100,7 @@ export const Product = sequelize.define<ProductInstance>(
             allowNull: false,
             type: DataTypes.BOOLEAN
         },
-        long_description: {
+        longDescription: {
             allowNull: false,
             type: DataTypes.TEXT
         },
@@ -110,11 +110,11 @@ export const Product = sequelize.define<ProductInstance>(
         },
         price: {
             allowNull: false,
-            type: DataTypes.DOUBLE
+            type: DataTypes.DECIMAL(10, 2)
         },
         offerPrice: {
             allowNull: true,
-            type: DataTypes.DOUBLE
+            type: DataTypes.DECIMAL(10, 2)
         },
         offerStartDate: {
             allowNull: true,
@@ -142,7 +142,7 @@ export const Product = sequelize.define<ProductInstance>(
         },
         createdBy: {
             allowNull: false,
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             references: {
                 model: User,
                 key: 'id'
@@ -150,6 +150,8 @@ export const Product = sequelize.define<ProductInstance>(
         },
     },
     {
-        tableName: 'products'
+        timestamps: true,
+        tableName: 'products',
+        freezeTableName: true,
     }
 );

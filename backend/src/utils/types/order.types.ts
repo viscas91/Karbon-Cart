@@ -1,8 +1,8 @@
 export type OrderType = {
     pkid?: number,
-    id: string,
+    id?: string,
     userId: number,
-    totalAmount: DoubleRange,
+    totalAmount: number,
     status: string,
     createdAt?: Date,
 }
@@ -13,8 +13,8 @@ export type OrderItemType = {
     orderId: number,
     productId: number,
     quantity: number,
-    price: DoubleRange,
-    subTotal: DoubleRange,
+    price: number,
+    subTotal: number,
     createdAt?: Date,
     updatedAt?: Date
 }

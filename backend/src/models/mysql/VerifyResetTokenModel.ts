@@ -7,7 +7,7 @@ interface ResetTokenType {
     createdAt: Date
 }
 
-interface ResetTokenInstance extends Model<ResetTokenType>, ResetTokenType {}
+interface ResetTokenInstance extends Model<ResetTokenType>, ResetTokenType { }
 
 export const VerifyResetToken = sequelize.define<ResetTokenInstance>('ResetToken', {
     userId: {
@@ -21,5 +21,9 @@ export const VerifyResetToken = sequelize.define<ResetTokenInstance>('ResetToken
     createdAt: {
         type: DataTypes.DATE,
         allowNull: false
-    }
-});
+    },
+}, {
+    tableName: 'verifyresettokens',
+    timestamps: true
+}
+);

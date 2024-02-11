@@ -1,4 +1,18 @@
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+
+export async function generateRandomPassword(length: number = 12) {
+    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+    const randomBytes = await crypto.randomBytes(length);
+    let password = '';
+
+    for (let i = 0; i < length; i++) {
+        const randomIndex = randomBytes.readUInt8(i) % characters.length;
+        password += characters.charAt(randomIndex);
+    }
+
+    return password;
+}
 
 export class Password {
     static async toHash(password: string) {

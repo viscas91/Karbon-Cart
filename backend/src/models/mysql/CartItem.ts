@@ -20,13 +20,13 @@ const CartItem = sequelize.define<CartItemInstance>(
         },
         id: {
             allowNull: false,
-            type: DataTypes.UUIDV4,
+            type: DataTypes.UUID,
             defaultValue: () => uuidV4(),
             unique: true
         },
         cartId: {
             allowNull: false,
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             references: {
                 model: Cart,
                 key: 'pkid'
@@ -34,7 +34,7 @@ const CartItem = sequelize.define<CartItemInstance>(
         },
         productId: {
             allowNull: false,
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             references: {
                 model: Product,
                 key: 'pkid'
@@ -54,13 +54,9 @@ const CartItem = sequelize.define<CartItemInstance>(
         }
     },
     {
+        timestamps: true,
         tableName: 'cartitems'
     }
 );
-
-CartItem.belongsTo(Cart, {
-    foreignKey: 'pkid',
-    as: 'cart'
-})
 
 export { CartItem };

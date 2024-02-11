@@ -20,7 +20,7 @@ const Order = sequelize.define<OrderInstance>(
         },
         id: {
             allowNull: false,
-            type: DataTypes.UUIDV4,
+            type: DataTypes.UUID,
             defaultValue: () => uuidV4(),
             unique: true
         },
@@ -34,7 +34,7 @@ const Order = sequelize.define<OrderInstance>(
         },
         totalAmount: {
             allowNull: false,
-            type: DataTypes.NUMBER,
+            type: DataTypes.DECIMAL(10, 2),
         },
         status: {
             allowNull: false,
@@ -42,6 +42,7 @@ const Order = sequelize.define<OrderInstance>(
         },
     },
     {
+        timestamps: true,
         tableName: 'orders',
     }
 );

@@ -102,11 +102,15 @@ export const Vendor = sequelize.define<VendorInstance>(
         },
         userId: {
             allowNull: false,
-            type: DataTypes.UUID,
+            type: DataTypes.INTEGER,
             references: {
                 model: User,
-                key: 'id'
+                key: 'pkid'
             }
         },
+    },
+    {
+        timestamps: true,
+        tableName: 'vendors'
     }
 );
