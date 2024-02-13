@@ -1,8 +1,12 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
+import BrandList from '../../../brands/src/components/BrandList';
+import BrandCreate from '../../../brands/src/components/BrandCreate';
+import BrandEdit from '../../../brands/src/components/BrandEdit';
 const Layout = lazy(() => import('./Layout'));
 const LoginForm = lazy(() => import('../../../auth/src/forms/LoginForm'));
 const ProductCreate = lazy(() => import('../../../products/src/components/ProductCreate'));
+const ProductEdit = lazy(() => import('../../../products/src/components/ProductEdit'));
 const ProductList = lazy(() => import('../../../products/src/components/ProductList'));
 const VerifiedPage = lazy(() => import('../../../auth/src/pages/VerifiedPage'));
 const PasswordResetPage = lazy(() => import('../../../auth/src/pages/PasswordResetPage'));
@@ -34,21 +38,24 @@ const App: React.FC = () => {
                     <Route path='/resend-email' element={<ResendEmailTokenPage />} />
                     <Route path='/pcr' element={<PasswordResetRequestPage />} />
                     <Route element={<AuthRequired />}>
-                        <Route path="/" element={<Layout />}>
-                            <Route path='/categories' element={<CategoryList />} />
-                            <Route path='/categories/create' element={<CategoryCreate />} />
-                            <Route path='/categories/:id/edit' element={<CategoryEdit />} />
-                            <Route path='/subcategories' element={<SubCategoryList />} />
-                            <Route path='/subcategories/create' element={<SubCategoryCreate />} />
-                            <Route path='/subcategories/:id/edit' element={<SubCategoryEdit />} />
-                            <Route path='/childcategories' element={<ChildCategoryList />} />
-                            <Route path='/childcategories/create' element={<ChildCategoryCreate />} />
-                            <Route path='/childcategories/:id/edit' element={<ChildCategoryEdit />} />
-                            <Route path='/products' element={<ProductList />} />
-                            <Route path='/products/create' element={<ProductCreate />} />
-                            <Route path='/products/:productId/edit' element={<ProductCreate />} />
-                            <Route path='/vendors' element={<VendorList />} />
-                            <Route path="/vendors/create" element={<VendorCreate />} />
+                        <Route path="/admin" element={<Layout />}>
+                            <Route path='brands' element={<BrandList />} />
+                            <Route path='brands/create' element={<BrandCreate />} />
+                            <Route path='brands/:id/edit' element={<BrandEdit />} />
+                            <Route path='categories' element={<CategoryList />} />
+                            <Route path='categories/create' element={<CategoryCreate />} />
+                            <Route path='categories/:id/edit' element={<CategoryEdit />} />
+                            <Route path='subcategories' element={<SubCategoryList />} />
+                            <Route path='subcategories/create' element={<SubCategoryCreate />} />
+                            <Route path='subcategories/:id/edit' element={<SubCategoryEdit />} />
+                            <Route path='childcategories' element={<ChildCategoryList />} />
+                            <Route path='childcategories/create' element={<ChildCategoryCreate />} />
+                            <Route path='childcategories/:id/edit' element={<ChildCategoryEdit />} />
+                            <Route path='products' element={<ProductList />} />
+                            <Route path='products/create' element={<ProductCreate />} />
+                            <Route path='products/:productId/edit' element={<ProductEdit />} />
+                            <Route path='vendors' element={<VendorList />} />
+                            <Route path="vendors/create" element={<VendorCreate />} />
                         </Route>
                     </Route>
                 </Routes>

@@ -3,7 +3,7 @@ import { baseApiSlice } from "../../../common/src/features/baseApiSlice";
 export const productApiSlice = baseApiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllProducts: builder.query({
-            query: (page = 1) => `products/all?page=${page}`,
+            query: (page?) => `products/all?page=${page}`,
             providesTags: ["Product"]
         }),
         createProduct: builder.mutation({

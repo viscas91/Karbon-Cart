@@ -1,15 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 // import { decodeToken } from "react-jwt";
 import { RootState } from "../../../common/src/store";
-import { UserType } from "../../../common/src/types/UserType";
 
-const user = JSON.parse(localStorage.getItem("user") as string);
+interface User {
+    success: boolean;
+    firstName: string;
+    lastName: string;
+    username: string;
+    provider: string;
+    avatar: string | null;
+    accessToken: string;
+}
+
+const user: User = JSON.parse(localStorage.getItem("user") as string);
 const googleToken = localStorage.getItem("googleToken");
 
 // const decodedToken = decodeToken(googleToken as string);
 
 interface AuthState {
-    user: UserType | null;
+    user: User | null;
     googleToken: string | null;
   }
   
@@ -27,7 +36,7 @@ const authSlice = createSlice({
 			localStorage.setItem("user", JSON.stringify(action.payload));
 		},
 		logOut: (state, _action: { payload?: any }) => {
-    			state.user = null;
+			state.user = null;
 			state.googleToken = null;
 			localStorage.removeItem("user");
 			localStorage.removeItem("googleToken");

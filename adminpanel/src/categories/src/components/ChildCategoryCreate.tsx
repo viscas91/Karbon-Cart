@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
     useCreateChildCategoryMutation,
     useGetAllCategoriesQuery,
-    useGetAllSubCategoriesByCategoryIdQuery,
+    useGetAllSubCategoriesQuery,
 } from "../features/categorySlice";
 import { useEffect, useState } from "react";
 import { Formik } from "formik";
@@ -20,7 +20,7 @@ const ChildCategoryCreate: React.FC = () => {
     const [categoryId, setCategoryId] = useState<number>();
 
     const { data: categoriesData, isLoading: isCatLoading } = useGetAllCategoriesQuery();
-    const { data: subCategoriesData, isLoading: isSubCatLoading } = useGetAllSubCategoriesByCategoryIdQuery(categoryId);
+    const { data: subCategoriesData, isLoading: isSubCatLoading } = useGetAllSubCategoriesQuery();
     // const goback = () => navigate(-1);
 
     const from = location.state?.from?.pathname || "/childCategories";

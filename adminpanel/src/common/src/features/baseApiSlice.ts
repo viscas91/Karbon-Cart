@@ -20,12 +20,16 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
 	let response = await baseQuery(args, api, extraOptions);
 
-	if (response?.error?.status === 403) {
+	console.log('base query response', response)
+
+	if ((response?.error?.status === 403) || (response?.error?.status === 'PARSING_ERROR' && response?.error?.originalStatus == 403)) {
 		const refreshResponse = await baseQuery(
 			"/auth/new_access_token",
 			api,
 			extraOptions
 		);
+		
+		console.log('refresh resonse', refreshResponse)
 
 		if (refreshResponse?.data) {
 			api.dispatch(logIn({ ...refreshResponse.data }));
@@ -40,6 +44,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchB
 export const baseApiSlice = createApi({
 	reducerPath: "api",
 	baseQuery: baseQueryWithRefreshToken,
-	tagTypes: ["User", "Product", "Vendor", "Category", "SubCategory", "ChildCategory", "Cart"],
+	tagTypes: ["User", "Product", "Vendor", "Category", "SubCategory", "ChildCategory", "Cart", "Brand"],
 	endpoints: (_builder) => ({}),
 });

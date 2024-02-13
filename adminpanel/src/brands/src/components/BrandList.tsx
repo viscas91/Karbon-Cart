@@ -1,32 +1,32 @@
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Box, Paper, Typography } from '@mui/material';
+import { useGetAllBrandsQuery } from '../features/brandSlice';
 // import { useLocation, useNavigate } from 'react-router-dom';
-import { useGetAllProductsQuery } from '../features/productSlice';
+
 
 const columns: GridColDef[] = [
-  { field: 'pkid', headerName: 'ID', width: 70 },
+  { field: 'id', headerName: 'ID', width: 70 },
   { field: 'icon', headerName: 'Icon', width: 130 },
   { field: 'title', headerName: 'Title' },
 ];
-
+    
 interface DataGridOnChangeProps {
     page: number,
     pageSize: number
 }
 
-const ProductList: React.FC = () => {
+const BrandList: React.FC = () => {
     // const navigate = useNavigate();
     // const location = useLocation();
     // const goback = () => navigate(-1);
     const [page, setPage] = React.useState(0);
 
-    // const from = location.state?.from?.pathname || "/products";
+    // const from = location.state?.from?.pathname || "/categories";
 
-    const { data, isLoading } = useGetAllProductsQuery(page);
+    const { data, isLoading } = useGetAllBrandsQuery(page);
     
-    const rows = data?.products.rows || []
-    console.log(rows)
+    const rows = data?.brands || []
     
     const handleChange = (e: DataGridOnChangeProps) => {
         setPage(e.page);
@@ -34,7 +34,7 @@ const ProductList: React.FC = () => {
 
   return (
     <>
-    <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>Products</Typography>
+    <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>Brands</Typography>
     
     <Paper>
         <Box mb={2}>
@@ -55,6 +55,6 @@ const ProductList: React.FC = () => {
     </Paper>
     </>
   );
-}   
+}
 
-export default ProductList;
+export default BrandList;

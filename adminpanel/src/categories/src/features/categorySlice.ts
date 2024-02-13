@@ -10,7 +10,7 @@ export const categoryApiSlice = baseApiSlice.injectEndpoints({
             providesTags: ["Category"]
         }),
         getAllSubCategories: builder.query({
-            query: (page?) => {
+            query: (page?: number | void) => {
                 const queryParams = page !== undefined ? `?page=${page}` : '';
                 return `/subcategories/all${queryParams}`;
             },
@@ -24,7 +24,7 @@ export const categoryApiSlice = baseApiSlice.injectEndpoints({
             providesTags: ["SubCategory"]
         }),
         getAllChildCategories: builder.query({
-            query: (page?) => {
+            query: (page?: number | void) => {
                 const queryParams = page !== undefined ? `?page=${page}` : '';
                 return `/childcategories/all${queryParams}`;
             },
@@ -35,7 +35,7 @@ export const categoryApiSlice = baseApiSlice.injectEndpoints({
                 const queryParams = page !== undefined ? `?page=${page}` : '';
                 return `/childcategories/${subCategoryId}/all${queryParams}`;
             },
-            providesTags: ["SubCategory"]
+            providesTags: ["ChildCategory"]
         }),
         createCategory: builder.mutation({
             query: (category) => ({

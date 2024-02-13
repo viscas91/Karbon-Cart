@@ -1,4 +1,5 @@
 import { Box, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   return (
@@ -6,19 +7,19 @@ const Sidebar = () => {
         <nav aria-label="main mailbox folders">
         <List>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton component={Link} to='/admin/categories'>
               <ListItemIcon>
-                <p>Some icon</p>
+                
               </ListItemIcon>
-              <ListItemText primary="Inbox" />
+              <ListItemText primary="Categories" />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton component={Link} to="/admin/products">
               <ListItemIcon>
-                <p>Some icon</p>
+                
               </ListItemIcon>
-              <ListItemText primary="Drafts" />
+              <ListItemText primary="Products" />
             </ListItemButton>
           </ListItem>
         </List>

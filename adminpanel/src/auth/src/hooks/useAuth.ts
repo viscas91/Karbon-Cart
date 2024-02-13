@@ -12,6 +12,7 @@ export const useAuthUser = () => {
 
 	if (token) {
 		const decodedToken = decodeToken(token);
+		console.log(decodedToken)
 		const { role } = decodedToken as JwtPayload;
 
 		return role;
