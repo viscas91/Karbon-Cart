@@ -3,6 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { User } from "../models/mysql/User";
 import { UserType } from "../utils/types/common.types";
 import { NotAuthorized } from "../utils/errors/notAuthorized";
+import { NotAuthenticated } from "../utils/errors/notAuthenticated";
 
 type CustomRequest = Request & { role?: string }
 
@@ -10,7 +11,6 @@ export const checkAuth = async (req: CustomRequest, res: Response, next: NextFun
 	let jwt_token: string;
 
 	const authHeader = req.headers.authorization || req.headers.Authorization;
-	console.log(authHeader)
 
 	if (!authHeader || (Array.isArray(authHeader) && !authHeader[0]?.startsWith("Bearer"))) {
 		return res.sendStatus(401);

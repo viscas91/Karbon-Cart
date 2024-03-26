@@ -3,12 +3,20 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Box, Paper, Typography } from '@mui/material';
 // import { useLocation, useNavigate } from 'react-router-dom';
 import { useGetAllSubCategoriesQuery } from '../features/categorySlice';
+import { Link } from 'react-router-dom';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 70 },
   { field: 'icon', headerName: 'Icon', width: 130 },
   { field: 'categoryId', headerName: 'Category ID', width: 130 },
-  { field: 'title', headerName: 'Title' },
+  { field: 'title', 
+    headerName: 'Title',
+    renderCell: (params) => (
+        <Link to={`/admin/subcategories/${params.row.id}/edit`}>
+          {params.value}
+        </Link>
+      ),
+},
 ];
     
 interface DataGridOnChangeProps {
@@ -21,15 +29,22 @@ const SubCategoryList: React.FC = () => {
     // const location = useLocation();
     // const goback = () => navigate(-1);
     const [page, setPage] = React.useState(1);
-
+    const [pageSize, setPageSize] = React.useState(10);
     // const from = location.state?.from?.pathname || "/categories";
 
-    const { data, isLoading } = useGetAllSubCategoriesQuery(page);
+    const { data, isLoading } = useGetAllSubCategoriesQuery({ page, pageSize });
     
     const rows = data?.subCategories || []
     
     const handleChange = (e: DataGridOnChangeProps) => {
         setPage(e.page);
+        setPageSize((prevPageSize) => {
+            if (pageSize !== prevPageSize && !isNaN(pageSize)) {
+              return pageSize; // Set the new size if it's different and valid
+            } else {
+                return prevPageSize; // Keep the previous size if it's the same or invalid
+            }
+          });
     }
 
   return (
@@ -42,9 +57,11 @@ const SubCategoryList: React.FC = () => {
             loading={isLoading}
             rows={rows}
             columns={columns}
+            rowCount={data?.count}
+            paginationMode='server'
             initialState={{
                 pagination: {
-                    paginationModel: { page: page, pageSize: 10 },
+                    paginationModel: { page: page, pageSize: pageSize },
                 },
             }}
             onPaginationModelChange={handleChange}

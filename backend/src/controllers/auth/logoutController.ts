@@ -1,14 +1,13 @@
 import asyncHandler from "express-async-handler";
 import { User } from "../../models/mysql/User";
 import { Request, Response } from "express";
-import { BadRequestError } from "../../utils/errors/badRequest";
 
 const logoutUser = async (req: Request, res: Response) => {
 	const cookies = req.cookies;
 
 	if (!cookies?.jwt) {
 		res.sendStatus(204);
-		throw new BadRequestError("No cookie found");
+		throw new Error("No cookie found");
 	}
 
 	const refreshToken = cookies.jwt;

@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+    useCategoryImageMutation,
     useCreateChildCategoryMutation,
     useGetAllCategoriesQuery,
     useGetAllSubCategoriesQuery,
@@ -14,6 +15,8 @@ const ChildCategoryCreate: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const [ico, setIco] = useState<File>();
+
     const [createChildCategory, { isSuccess, isLoading }] = useCreateChildCategoryMutation();
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [subCategories, setSubCategories] = useState<SubCategoryType[]>([]);
@@ -21,9 +24,10 @@ const ChildCategoryCreate: React.FC = () => {
 
     const { data: categoriesData, isLoading: isCatLoading } = useGetAllCategoriesQuery();
     const { data: subCategoriesData, isLoading: isSubCatLoading } = useGetAllSubCategoriesQuery();
+    const [uploadImage, { isSuccess: isImageUploadSuccess, isLoading: isImageUploading }] = useCategoryImageMutation();
     // const goback = () => navigate(-1);
 
-    const from = location.state?.from?.pathname || "/childCategories";
+    const from = location.state?.from?.pathname || "/admin/childcategories";
 
 
     useEffect(() => {
@@ -80,7 +84,10 @@ const ChildCategoryCreate: React.FC = () => {
                 onSubmit={async (values, { setStatus, setSubmitting }) => {
                     try {
                         await createChildCategory(values).unwrap();
-
+                        const formData = new FormData();
+                        formData.append('file', ico as File);
+                        
+                        await uploadImage(formData).unwrap();
                         setStatus({ success: true });
                         setSubmitting(false);
                     } catch (err: any) {
@@ -96,6 +103,7 @@ const ChildCategoryCreate: React.FC = () => {
                     handleBlur,
                     handleChange,
                     handleSubmit,
+                    setFieldValue,
                     touched,
                     values,
                 }) => (
@@ -136,8 +144,8 @@ const ChildCategoryCreate: React.FC = () => {
                                                     )}
                                             </Box>
 
-                                            <Box>
-                                                <FormControl>
+                                            <Box my={1}>
+                                                <FormControl sx={{ width: '100%' }}>
                                                     <InputLabel htmlFor='categoryID'>Category</InputLabel>
                                                     <Select
                                                         fullWidth
@@ -174,8 +182,8 @@ const ChildCategoryCreate: React.FC = () => {
                                                     )}
                                             </Box>
 
-                                            <Box>
-                                                <FormControl>
+                                            <Box my={1}>
+                                                <FormControl sx={{ width: '100%' }}>
                                                     <InputLabel htmlFor='subCategoryID'>Sub Category</InputLabel>
                                                     <Select
                                                         fullWidth
@@ -215,13 +223,19 @@ const ChildCategoryCreate: React.FC = () => {
                                                     type='file'
                                                     name="icon"
                                                     onBlur={handleBlur}
-                                                    onChange={handleChange}
+                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                        handleChange(event);
+                                                        const file = event.target.files?.[0]!;
+                                                        setFieldValue("icon", file.name);
+                                                        setIco(file)
+                                                    }}
                                                     fullWidth
                                                     error={Boolean(
                                                         touched.icon &&
                                                         errors.icon
                                                     )}
                                                 />
+                                                {isImageUploading || isImageUploadSuccess}
                                                 {touched.icon &&
                                                     errors.icon && (
                                                         <FormHelperText

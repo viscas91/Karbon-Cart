@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCreateCategoryMutation  } from "../features/categorySlice";
-import { useEffect } from "react";
+import { useCategoryImageMutation, useCreateCategoryMutation  } from "../features/categorySlice";
+import React, { useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Box, Button, FormHelperText, Grid, Paper, TextField, Typography } from "@mui/material";
@@ -9,10 +9,12 @@ const CategoryCreate: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     // const goback = () => navigate(-1);
+    const [ico, setIco] = useState<File>();
 
-    const from = location.state?.from?.pathname || "/categories";
+    const from = location.state?.from?.pathname || "/admin/categories";
 
     const [createCategory, { isSuccess, isLoading }] = useCreateCategoryMutation();
+    const [uploadImage, { isSuccess: isImageUploadSuccess, isLoading: isImageUploading }] = useCategoryImageMutation();
 
     useEffect(() => {
         if (isSuccess) {
@@ -52,7 +54,14 @@ const CategoryCreate: React.FC = () => {
 
                 onSubmit={async (values, { setStatus, setSubmitting }) => {
                     try {
-                        await createCategory(values).unwrap();
+                        console.log(values)
+                        const formData = new FormData();
+                        formData.append('file', ico as File);
+                        
+                        const imageUploadResponse = await uploadImage(formData).unwrap();
+                        const uploadedFileName = imageUploadResponse.uploadedFileName;
+
+                        await createCategory({ ...values, icon: uploadedFileName }).unwrap();
                         setStatus({ success: true });
                         setSubmitting(false);
                     } catch (err: any) {
@@ -68,6 +77,7 @@ const CategoryCreate: React.FC = () => {
                     handleBlur,
                     handleChange,
                     handleSubmit,
+                    setFieldValue,
                     touched,
                     values,
                 }) => (
@@ -75,7 +85,7 @@ const CategoryCreate: React.FC = () => {
                         <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>Add New Category</Typography>
 
                         <Paper sx={{ padding: 4 }}>
-                            <Box component='form' noValidate autoComplete="off" onSubmit={handleSubmit}>
+                            <Box component='form' noValidate autoComplete="off" encType="multipart/form-data" onSubmit={handleSubmit}>
                                 {isLoading ? (
                                     <div>Loading...</div>
                                 ) : (
@@ -115,13 +125,19 @@ const CategoryCreate: React.FC = () => {
                                                         type='file'
                                                         name="icon"
                                                         onBlur={handleBlur}
-                                                        onChange={handleChange}
+                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                            handleChange(event);
+                                                            const file = event.target.files?.[0]!;
+                                                            setFieldValue("icon", file.name);
+                                                            setIco(file)
+                                                          }}
                                                         fullWidth
                                                         error={Boolean(
                                                             touched.icon &&
                                                             errors.icon
                                                         )}
                                                     />
+                                                    {isImageUploading || isImageUploadSuccess}
                                                     {touched.icon &&
                                                     errors.icon && (
                                                         <FormHelperText

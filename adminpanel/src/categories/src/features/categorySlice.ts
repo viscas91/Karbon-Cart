@@ -1,38 +1,44 @@
 import { baseApiSlice } from "../../../common/src/features/baseApiSlice";
 
+type pageObj = {
+    page: number,
+    pageSize: number,
+    searchTerm?: string,
+}
+
 export const categoryApiSlice = baseApiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllCategories: builder.query({
-            query: (page?: number | void) => {
-                const queryParams = page !== undefined ? `?page=${page}` : '';
+            query: (pageObj?: pageObj | void) => {
+                const queryParams = pageObj !== undefined ? `?page=${pageObj.page}${pageObj.pageSize ? `&pageSize=${pageObj.pageSize}` : ''}` : '';
                 return `/categories/all${queryParams}`;
             },
             providesTags: ["Category"]
         }),
         getAllSubCategories: builder.query({
-            query: (page?: number | void) => {
-                const queryParams = page !== undefined ? `?page=${page}` : '';
+            query: (pageObj?: pageObj | void,) => {
+                const queryParams = pageObj !== undefined ? `?page=${pageObj.page}${pageObj.pageSize ? `&pageSize=${pageObj.pageSize}` : ''}` : '';
                 return `/subcategories/all${queryParams}`;
             },
             providesTags: ["SubCategory"]
         }),
         getAllSubCategoriesByCategoryId: builder.query({
-            query: (categoryId, page?: number | void) => {
-                const queryParams = page !== undefined ? `?page=${page}` : '';
+            query: (categoryId, pageObj?: pageObj | void) => {
+                const queryParams = pageObj !== undefined ? `?page=${pageObj.page}${pageObj.pageSize ? `&pageSize=${pageObj.pageSize}` : ''}` : '';
                 return `/subcategories/${categoryId}/all${queryParams}`;
             },
             providesTags: ["SubCategory"]
         }),
         getAllChildCategories: builder.query({
-            query: (page?: number | void) => {
-                const queryParams = page !== undefined ? `?page=${page}` : '';
+            query: (pageObj?: pageObj | void) => {
+                const queryParams = pageObj !== undefined ? `?page=${pageObj.page}${pageObj.pageSize ? `&pageSize=${pageObj.pageSize}` : ''}` : '';
                 return `/childcategories/all${queryParams}`;
             },
             providesTags: ["ChildCategory"]
         }),
         getAllChildCategoriesByCategoryId: builder.query({
-            query: (subCategoryId: number | void, page?: number | void) => {
-                const queryParams = page !== undefined ? `?page=${page}` : '';
+            query: (subCategoryId: number | void, pageObj?: pageObj | void) => {
+                const queryParams = pageObj !== undefined ? `?page=${pageObj.page}${pageObj.pageSize ? `&pageSize=${pageObj.pageSize}` : ''}` : '';
                 return `/childcategories/${subCategoryId}/all${queryParams}`;
             },
             providesTags: ["ChildCategory"]
@@ -117,6 +123,21 @@ export const categoryApiSlice = baseApiSlice.injectEndpoints({
                 method: 'DELETE'
             }),
             invalidatesTags: ['ChildCategory']
+        }),
+        categoryImage: builder.mutation({
+            query: (formData: FormData) => ({
+                url: `/upload`,
+                method: 'POST',
+                body: formData,
+            }),
+            invalidatesTags: ['Category']
+        }),
+        categorySearch: builder.query({
+            query: (pageObj: pageObj) => {
+                console.log('from slice',pageObj)
+                const queryParams = pageObj !== undefined ? `?page=${pageObj.page}${pageObj.pageSize ? `&pageSize=${pageObj.pageSize}` : ''}${pageObj.searchTerm ? `&search=${pageObj.searchTerm}` : ''}` : '';
+                return `/categories${queryParams}`;
+            }
         })
     })
 })
@@ -139,5 +160,8 @@ export const {
     useGetAllChildCategoriesQuery,
     useGetSingleChildCategoryQuery,
     useUpdateChildCategoryMutation,
-    useDeleteChildCategoryMutation
+    useDeleteChildCategoryMutation,
+
+    useCategoryImageMutation,
+    useCategorySearchQuery,
 } = categoryApiSlice;

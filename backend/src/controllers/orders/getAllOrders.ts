@@ -26,7 +26,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
             limit: pageSize,
             offset: pageSize * (page - 1),
           });
-    } else if (user.role ===UserRole.Vendor) {
+    } else if (user.role === UserRole.Vendor) {
         orders = await Order.findAndCountAll({
             where: {
                 userId: user.id

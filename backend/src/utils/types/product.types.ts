@@ -31,6 +31,6 @@ export type ProductType = {
     seoTitle: string,
     seoDescription: Text,
     createdBy: string,
-    createdAt?: Date,
-    updatedAt?: Date
+    createdAt?: Date | number,
+    updatedAt?: Date | number
 }

@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetSingleCategoryQuery, useUpdateCategoryMutation } from "../features/categorySlice";
+import { useCategoryImageMutation, useGetSingleCategoryQuery, useUpdateCategoryMutation } from "../features/categorySlice";
 import { useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from 'yup';
-import { Box, Button, FormHelperText, Grid, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, FormHelperText, Grid, OutlinedInput, Paper, TextField, Typography } from "@mui/material";
 
 const CategoryEdit: React.FC = () => {
     const navigate = useNavigate();
@@ -12,10 +12,12 @@ const CategoryEdit: React.FC = () => {
 
     const [title, setTitle] = useState<string>('');
     const [icon, setIcon] = useState<string>('');
+    const [ico, setIco] = useState<File>();
     
     const { data } = id ? useGetSingleCategoryQuery(id) : { data: null };
 
     const [updateCategory, { isSuccess: isUpdateSuccess, isLoading, data:updateData }] = useUpdateCategoryMutation();
+    const [uploadImage, { isSuccess: isImageUploadSuccess, isLoading: isImageUploading }] = useCategoryImageMutation();
 
     useEffect(() => {
         const category = data?.category;
@@ -27,7 +29,7 @@ const CategoryEdit: React.FC = () => {
 
     useEffect(() => {
         if(isUpdateSuccess){
-            navigate('/categories');
+            navigate('/admin/categories');
         }
     }, [isUpdateSuccess, navigate, updateData]);
 
@@ -63,7 +65,17 @@ const CategoryEdit: React.FC = () => {
 
                 onSubmit={async (values, { setStatus, setSubmitting }) => {
                     try {
-                        await updateCategory({ id: data.category.id, ...values }).unwrap();                           
+                        if(ico){
+                            const formData = new FormData();
+                            formData.append('file', ico as File);
+
+                            const imageUploadResponse = await uploadImage(formData).unwrap();
+                            const uploadedFileName = imageUploadResponse.uploadedFileName;
+
+                            await updateCategory({ id: data.category.id, ...values, icon: uploadedFileName }).unwrap();
+                        } else {
+                            await updateCategory({ id: data.category.id, ...values }).unwrap();
+                        }                          
                         setStatus({ success: true });
                         setSubmitting(false);
                     } catch (err: any) {
@@ -79,6 +91,7 @@ const CategoryEdit: React.FC = () => {
                     handleBlur,
                     handleChange,
                     handleSubmit,
+                    setFieldValue,
                     touched,
                     values,
                 }) => (
@@ -120,19 +133,27 @@ const CategoryEdit: React.FC = () => {
                                                 </Box>
 
                                                 <Box sx={{ my: 1 }}>
-                                                    <TextField
+                                                    <Box component='img' sx={{ width: '100%', height: 'auto', my: 2 }} src={`/media/${icon}`} alt='Image' />
+
+                                                    <OutlinedInput
                                                         required 
                                                         id='icon'
                                                         type='file'
                                                         name="icon"
                                                         onBlur={handleBlur}
-                                                        onChange={handleChange}
+                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                            handleChange(event);
+                                                            const file = event.target.files?.[0]!;
+                                                            setFieldValue("icon", file.name);
+                                                            setIco(file)
+                                                        }}
                                                         fullWidth
                                                         error={Boolean(
                                                             touched.icon &&
                                                             errors.icon
                                                         )}
                                                     />
+                                                    { isImageUploadSuccess || isImageUploading }
                                                     {touched.icon &&
                                                     errors.icon && (
                                                         <FormHelperText

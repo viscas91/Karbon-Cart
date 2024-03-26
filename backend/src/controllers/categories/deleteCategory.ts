@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { Category, ChildCategory, SubCategory } from "../../models/mysql/Category";
 import { NotFoundError } from '../../utils/errors/notFound';
+import { UserType } from "../../utils/types/common.types";
+import { UserRole } from "../../utils/enums/user.utils";
+import { NotAuthorized } from "../../utils/errors/notAuthorized";
 
 // $-title   Delete Vendor
 // $-path    DELETE /api/v1/vendor/:id
@@ -8,6 +11,12 @@ import { NotFoundError } from '../../utils/errors/notFound';
 
 export const deleteCategory = async (req: Request, res: Response) => {
     const id = req.params.id;
+	const user = req.user as UserType;
+
+	if(user.role !== (UserRole.Admin || UserRole.Staff)){
+		throw new NotAuthorized('You are not authorized to perform this action');
+	}
+
 	const category = await Category.findOne({ where: { id }});
 
 	if (!category) {

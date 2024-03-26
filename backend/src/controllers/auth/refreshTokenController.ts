@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { User } from "../../models/mysql/User";
 import { Request, Response } from "express";
 import { UserType } from "../../utils/types/common.types";
+import { NotAuthenticated } from "../../utils/errors/notAuthenticated";
+import { NotAuthorized } from "../../utils/errors/notAuthorized";
 
 // $-title   Get new access tokens from the refresh token
 // $-path    GET /api/v1/auth/new_access_token
@@ -39,7 +41,7 @@ export const newAccessToken = async (req: Request, res: Response) => {
 				if (err) {
 					return res.sendStatus(403);
 				}
-				await User.update({ refreshToken: '' }, { where: {id: (decoded as UserType).id } })
+				await User.update({ refreshToken: '' }, { where: {id: (decoded as UserType).id } });
 			}
 		);
 		return res.sendStatus(403);

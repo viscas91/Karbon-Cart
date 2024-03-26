@@ -1,8 +1,13 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import BrandList from '../../../brands/src/components/BrandList';
 import BrandCreate from '../../../brands/src/components/BrandCreate';
 import BrandEdit from '../../../brands/src/components/BrandEdit';
+import OrderList from '../../../orders/src/components/OrdersList';
+import PaymentList from '../../../payments/src/components/PaymentList';
+import { useAuthUser } from '../../../auth/src/hooks/useAuth';
+import { isTokenExpired } from '../../../common/src/utils/isTokenExpired';
+import SiteSettings from '../../../site/src/components/SiteSettings';
 const Layout = lazy(() => import('./Layout'));
 const LoginForm = lazy(() => import('../../../auth/src/forms/LoginForm'));
 const ProductCreate = lazy(() => import('../../../products/src/components/ProductCreate'));
@@ -25,8 +30,19 @@ const SubCategoryCreate = lazy(() => import('../../../categories/src/components/
 const CategoryEdit = lazy(() => import('../../../categories/src/components/CategoryEdit'));
 const ChildCategoryCreate = lazy(() => import('../../../categories/src/components/ChildCategoryCreate'));
 const ChildCategoryList = lazy(() => import('../../../categories/src/components/ChildCategoryList'));
+const Dashboard = lazy(() => import('../../../dashboard/Dashboard'));
 
 const App: React.FC = () => {
+    const obj = useAuthUser() ?? undefined;
+    const role = obj?.role;
+    const exp = obj?.exp;
+
+    useEffect(() => {
+        if((role && window.location.pathname === '/login') && (!isTokenExpired(exp))){
+          window.history.back()
+        }
+      }, [role, window.location, window.history, exp])
+
     return (
         <Router>
             <Suspense fallback={<div>Loading...</div>}>
@@ -37,8 +53,10 @@ const App: React.FC = () => {
                     <Route path='/password-reset' element={<PasswordResetPage />} />
                     <Route path='/resend-email' element={<ResendEmailTokenPage />} />
                     <Route path='/pcr' element={<PasswordResetRequestPage />} />
+                    <Route path="/vendor/signup" element={<VendorCreate />} />
                     <Route element={<AuthRequired />}>
                         <Route path="/admin" element={<Layout />}>
+                            <Route path='' element={<Dashboard />} />
                             <Route path='brands' element={<BrandList />} />
                             <Route path='brands/create' element={<BrandCreate />} />
                             <Route path='brands/:id/edit' element={<BrandEdit />} />
@@ -54,8 +72,11 @@ const App: React.FC = () => {
                             <Route path='products' element={<ProductList />} />
                             <Route path='products/create' element={<ProductCreate />} />
                             <Route path='products/:productId/edit' element={<ProductEdit />} />
+                            <Route path='orders' element={<OrderList />} />
+                            <Route path='payments' element={<PaymentList />} />
                             <Route path='vendors' element={<VendorList />} />
                             <Route path="vendors/create" element={<VendorCreate />} />
+                            <Route path="site" element={<SiteSettings />} />
                         </Route>
                     </Route>
                 </Routes>

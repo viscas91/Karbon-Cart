@@ -15,7 +15,7 @@ const LoginForm = () => {
 	const dispatch = useAppDispatch();
 	const location = useLocation();
 
-	const from = location.state?.from?.pathname || "/dashboard";
+	const from = location.state?.from?.pathname || "/admin";
 
 	const [showPassword, setShowPassword] = useState(false);
 
@@ -189,7 +189,7 @@ const LoginForm = () => {
 											<Link
 												variant="h6"
 												component={RouterLink}
-												to="/reset_password_request"
+												to="/pcr"
 												sx={{ textDecoration: "none" }}
 											>
 												Click Here to Reset it
@@ -215,7 +215,7 @@ const LoginForm = () => {
 								</Grid>
 							</Grid>
 							)}
-						</Box> // form
+						</Box>
 					</Box>
 				)}
 			</Formik>

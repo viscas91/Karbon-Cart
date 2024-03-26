@@ -55,7 +55,7 @@ const ProductEdit: React.FC = () => {
     const [subCategories, setSubCategories] = useState<SubCategoryType[]>([]);
     const [childCategories, setChildCategories] = useState<ChildCategoryType[]>([]);
 
-    const from = location.state?.from?.pathname || "/products";
+    const from = location.state?.from?.pathname || "/admin/products";
 
     const [createProduct, { isSuccess, isLoading }] = useCreateProductMutation();
     const { data } = useGetSingleProductQuery(productId);

@@ -2,13 +2,22 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Box, Paper, Typography } from '@mui/material';
 import { useGetAllBrandsQuery } from '../features/brandSlice';
+import { Link } from 'react-router-dom';
 // import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 70 },
   { field: 'icon', headerName: 'Icon', width: 130 },
-  { field: 'title', headerName: 'Title' },
+  { 
+    field: 'title', 
+    headerName: 'Title',
+    renderCell: (params) => (
+        <Link to={`/admin/brands/${params.row.id}/edit`}>
+          {params.value}
+        </Link>
+      ),
+    },
 ];
     
 interface DataGridOnChangeProps {
@@ -17,12 +26,7 @@ interface DataGridOnChangeProps {
 }
 
 const BrandList: React.FC = () => {
-    // const navigate = useNavigate();
-    // const location = useLocation();
-    // const goback = () => navigate(-1);
     const [page, setPage] = React.useState(0);
-
-    // const from = location.state?.from?.pathname || "/categories";
 
     const { data, isLoading } = useGetAllBrandsQuery(page);
     
@@ -34,7 +38,7 @@ const BrandList: React.FC = () => {
 
   return (
     <>
-    <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>Brands</Typography>
+    <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ mb: 2 }}>Brands</Typography>
     
     <Paper>
         <Box mb={2}>

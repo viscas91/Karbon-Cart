@@ -17,7 +17,7 @@ const createStaff = asyncHandler(async (req, res) => {
 	const { email } = req.body;
 
 	if(!email){
-		throw new BadRequestError('Fields cannot be empty')
+		throw new BadRequestError('Email is required.')
 	}
 
 	const staffExists = await User.findOne({

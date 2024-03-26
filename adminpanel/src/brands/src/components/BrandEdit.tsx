@@ -27,7 +27,7 @@ const BrandEdit: React.FC = () => {
 
     useEffect(() => {
         if(isUpdateSuccess){
-            navigate('/brands');
+            navigate('/admin/brands');
         }
     }, [isUpdateSuccess, navigate, updateData]);
 

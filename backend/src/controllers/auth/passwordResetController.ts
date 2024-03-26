@@ -3,6 +3,7 @@ import { VerifyResetToken } from "../../models/mysql/VerifyResetTokenModel.js";
 import { SendEmailOptions, sendEmail } from "../../utils/sendMail.js";
 import { Request, Response } from "express";
 import { randomBytes } from "crypto";
+import { BadRequestError } from "../../utils/errors/badRequest.js";
 
 const domainURL = process.env.DOMAIN;
 
@@ -14,15 +15,13 @@ const resetPasswordRequest = async (req: Request, res: Response) => {
 	const { email } = req.body;
 
 	if (!email) {
-		res.status(400);
-		throw new Error("You must enter your email address");
+		throw new BadRequestError("You must enter your email address");
 	}
 
 	const existingUser = await User.findOne({ where: { email } });
 
 	if (!existingUser) {
-		res.status(400);
-		throw new Error("That email is not associated with any account");
+		throw new BadRequestError("That email is not associated with any account");
 	}
 
 	let verificationToken = await VerifyResetToken.findOne({

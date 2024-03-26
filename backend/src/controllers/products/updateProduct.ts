@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UserType } from "../../utils/types/common.types";
 import { Product } from "../../models/mysql/Product";
 import { NotAuthorized } from "../../utils/errors/notAuthorized";
+import { NotFoundError } from "../../utils/errors/notFound";
 
 // $-title   Update Vendor
 // $-path    PATCH /api/v1/vendor/:id
@@ -11,8 +12,7 @@ const updateProduct = async (req: Request, res: Response) => {
 	const product = await Product.findByPk(req.params.id);
 
 	if (!product) {
-		res.status(404);
-		throw new Error("Vendor does not exist");
+		throw new NotFoundError("Vendor does not exist");
 	}
 
 	if (product.createdBy !== (req.user as UserType).id) {

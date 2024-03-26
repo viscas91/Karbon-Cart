@@ -13,9 +13,9 @@ export const useAuthUser = () => {
 	if (token) {
 		const decodedToken = decodeToken(token);
 		console.log(decodedToken)
-		const { role } = decodedToken as JwtPayload;
-
-		return role;
+		const { role, exp } = decodedToken as JwtPayload;
+		
+		return { role, exp };
 	} else if (googleToken) {
 		const gDecodedToken = decodeToken(googleToken);
 		const { role } = gDecodedToken as JwtPayload;

@@ -1,26 +1,61 @@
-import { Outlet } from 'react-router-dom';
-import Box from '@mui/material/Box';
+import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from "../../../common/src/components/Navbar";
-import Grid from '@mui/material/Grid';
-import { Container } from '@mui/material';
-import Sidebar from '../../../common/src/components/Sidebar';
+import { styled } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
+import { SideNav } from '../../../common/src/components/Sidebar';
+
+const SIDE_NAV_WIDTH = 280;
+
+const LayoutRoot = styled('div')(({ theme }) => ({
+    display: 'flex',
+    flex: '1 1 auto',
+    maxWidth: '100%',
+    [theme.breakpoints.up('lg')]: {
+        paddingLeft: SIDE_NAV_WIDTH
+    }
+}));
+
+const LayoutContainer = styled('div')({
+    display: 'flex',
+    flex: '1 1 auto',
+    flexDirection: 'column',
+    width: '100%',
+    padding: '2rem'
+});
 
 const Layout: React.FC = () => {
+    const location = useLocation();
+    const [openNav, setOpenNav] = useState(false);
+
+    const handlePathnameChange = useCallback(
+        () => {
+            if (openNav) {
+                setOpenNav(false);
+            }
+        },
+        [openNav]
+    );
+
+    useEffect(
+        () => {
+            handlePathnameChange();
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [location.pathname]
+    );
+
     return (
         <>
-            <Navbar />
-            <Grid container sx={{ height: 'calc(100vh - 4rem)', marginTop: '4rem', backgroundColor: '#F6F9FC' }}>
-                <Grid item xs={2}>
-                    <Sidebar />
-                </Grid>
-                <Grid item xs={10}>
-                    <Box component="main">
-                        <Container>
-                            <Outlet />
-                        </Container>
-                    </Box>
-                </Grid>
-            </Grid>
+            <Navbar onNavOpen={() => setOpenNav(true)} />
+            <SideNav
+                onClose={() => setOpenNav(false)}
+                open={openNav}
+            />
+            <LayoutRoot>
+                <LayoutContainer>
+                    <Outlet />
+                </LayoutContainer>
+            </LayoutRoot>
         </>
     )
 }

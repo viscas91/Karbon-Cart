@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import { useCreateVendorMutation } from "../features/vendorSlice";
-import { useEffect } from "react";
+import { useCreateVendorMutation, useVendorImageMutation } from "../features/vendorSlice";
+import { useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Box, Button, FormHelperText, Grid, OutlinedInput, Paper, Stack, TextField, Typography } from "@mui/material";
@@ -10,9 +10,11 @@ const VendorCreate: React.FC = () => {
     const location = useLocation();
     // const goback = navigate(-1);
 
-    const from = location.state?.from?.pathname || "/vendors";
+    const from = location.state?.from?.pathname || "/admin/vendors";
 
+    const [banner, setBanner] = useState<File>();
     const [createVendor, { isSuccess, isLoading }] = useCreateVendorMutation();
+    const [uploadImage, { isSuccess: isImageUploadSuccess, isLoading: isImageUploading }] = useVendorImageMutation();
 
     useEffect(() => {
         if (isSuccess) {
@@ -30,6 +32,8 @@ const VendorCreate: React.FC = () => {
                 banner: '',
                 phone: '',
                 fax: '',
+                aadharNo: '',
+                panNo: '',
                 address: '',
                 description: '',
                 fbLink: '',
@@ -69,6 +73,10 @@ const VendorCreate: React.FC = () => {
                 onSubmit={async (values, { setStatus, setSubmitting }) => {
                     try {
                         await createVendor(values).unwrap();
+                        const formData = new FormData();
+                        formData.append('file', banner as File);
+                        
+                        await uploadImage(formData).unwrap();
                         setStatus({ success: true });
                         setSubmitting(false);
                     } catch (err: any) {
@@ -85,6 +93,7 @@ const VendorCreate: React.FC = () => {
                     handleChange,
                     handleSubmit,
                     isSubmitting,
+                    setFieldValue,
                     touched,
                     values
                 }) => (
@@ -221,9 +230,15 @@ const VendorCreate: React.FC = () => {
                                                     name='banner'
                                                     label="Image Upload"
                                                     onBlur={handleBlur}
-                                                    onChange={handleChange}
+                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                        handleChange(event);
+                                                        const file = event.target.files?.[0]!;
+                                                        setFieldValue("banner", file.name);
+                                                        setBanner(file)
+                                                    }}
                                                     fullWidth
                                                 />
+                                                {isImageUploading || isImageUploadSuccess}
                                             </Box>
 
 

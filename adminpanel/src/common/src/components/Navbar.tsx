@@ -1,131 +1,120 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import { Stack, SvgIcon, Badge, Theme, useMediaQuery } from '@mui/material';
+import BellIcon from '@heroicons/react/24/solid/BellIcon';
+import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
+import Bars3Icon from '@heroicons/react/24/solid/Bars3Icon';
+import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
+import { alpha } from '@mui/material/styles';
+import { usePopover } from '../hooks/use-popover';
+import { AccountPopover } from './account-popover';
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const SIDE_NAV_WIDTH = 280;
+const TOP_NAV_HEIGHT = 64;
 
-function Navbar() {
-  const [_anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+type NavbarProps = {
+  onNavOpen: () => void
+}
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  // const handleCloseNavMenu = () => {
-  //   setAnchorElNav(null);
-  // };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+function Navbar(props: NavbarProps) {
+  const { onNavOpen } = props;
+  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
+  const accountPopover = usePopover();
 
   return (
-    <AppBar position="fixed" sx={{ height: '4rem' }}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.1rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
+    <>
+      <Box
+        component="header"
+        sx={{
+          backdropFilter: 'blur(6px)',
+          backgroundColor: (theme) => alpha(theme.palette.background.default, 0.8),
+          position: 'sticky',
+          left: {
+            lg: `${SIDE_NAV_WIDTH}px`
+          },
+          top: 0,
+          width: {
+            lg: `calc(100% - ${SIDE_NAV_WIDTH}px)`
+          },
+          zIndex: (theme) => theme.zIndex.appBar
+        }}
+      >
+        <Stack
+          alignItems="center"
+          direction="row"
+          justifyContent="space-between"
+          spacing={2}
+          sx={{
+            minHeight: TOP_NAV_HEIGHT,
+            px: 2
+          }}
+        >
+          <Stack
+            alignItems="center"
+            direction="row"
+            spacing={2}
           >
-            Karbon Cart
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-
-
-          </Box>
-
-          <Box sx={{ flexGrow: 1 }}>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-            >
-            Karbon Cart
-          </Typography>
-            </Box>
-            
-
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+            {lgUp && (
+              <IconButton onClick={onNavOpen}>
+                <SvgIcon fontSize="small">
+                  <Bars3Icon />
+                </SvgIcon>
+              </IconButton>
+            )}
+            <Tooltip title="Search">
+              <IconButton>
+                <SvgIcon fontSize="small">
+                  <MagnifyingGlassIcon />
+                </SvgIcon>
               </IconButton>
             </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+          </Stack>
+          <Stack
+            alignItems="center"
+            direction="row"
+            spacing={2}
+          >
+            <Tooltip title="Contacts">
+              <IconButton>
+                <SvgIcon fontSize="small">
+                  <UsersIcon />
+                </SvgIcon>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Notifications">
+              <IconButton>
+                <Badge
+                  badgeContent={4}
+                  color="success"
+                  variant="dot"
+                >
+                  <SvgIcon fontSize="small">
+                    <BellIcon />
+                  </SvgIcon>
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Avatar
+              onClick={accountPopover.handleOpen}
+              ref={accountPopover.anchorRef}
+              sx={{
+                cursor: 'pointer',
+                height: 40,
+                width: 40
               }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+              src="/assets/avatars/avatar-anika-visser.png"
+            />
+          </Stack>
+        </Stack>
+      </Box>
+      <AccountPopover
+        anchorEl={accountPopover.anchorRef.current}
+        open={accountPopover.open}
+        onClose={accountPopover.handleClose}
+      />
+    </>
   );
 }
 export default Navbar;

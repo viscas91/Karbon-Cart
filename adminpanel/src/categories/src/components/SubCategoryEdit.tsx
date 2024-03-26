@@ -43,7 +43,7 @@ const SubCategoryEdit: React.FC = () => {
 
     useEffect(() => {
         if(isUpdateSuccess){
-            navigate('/subcategories');
+            navigate('/admin/subcategories');
         }
     }, [isUpdateSuccess, navigate, updateData]);
 

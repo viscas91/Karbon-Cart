@@ -21,17 +21,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { toast } from "react-toastify";
 import * as Yup from "yup";
-// import Spinner from "../../../components/Spinner";
-// import StyledDivider from "../../../components/StyledDivider";
-// import useTitle from "../../../hooks/useTitle";
-// import {
-// 	strengthColor,
-// 	strengthIndicator,
-// } from "../../../utils/password-strength";
 import { usePasswordResetRequestMutation } from "../features/authApiSlice";
 import zxcvbn, { ZXCVBNResult } from "zxcvbn";
 import { PasswordStrength, strengthColor } from "../forms/RegisterForm";
-// import AuthWrapper from "../forms/AuthWrapper";
 
 const PasswordResetPage = () => {
 	// useTitle("Request Reset Password");
@@ -128,18 +120,15 @@ const PasswordResetPage = () => {
 								autoComplete="off"
 								onSubmit={handleSubmit}
 							>
-								<Grid>
+								<Grid container>
 									<Grid item xs={12}>
-										<Box
-											sx={{
+										<Box sx={{
 												display: "flex",
 												flexDirection: "row",
 												justifyContent: "center",
 												alignItems: "center",
 											}}
 										>
-											{" "}
-											{/* <GrPowerReset className="auth-svg" /> */}
 											<Typography variant="h2">
 												Reset Password?
 											</Typography>
@@ -216,8 +205,6 @@ const PasswordResetPage = () => {
 															</IconButton>
 														</InputAdornment>
 													}
-													placeholder="******"
-													inputProps={{}}
 												/>
 												{touched.password &&
 													errors.password && (
@@ -230,6 +217,7 @@ const PasswordResetPage = () => {
 													)}
 											</Stack>
 											{/* password strength indicator */}
+											{values.password && (
 											<FormControl
 												fullWidth
 												sx={{ mt: 2 }}
@@ -242,12 +230,10 @@ const PasswordResetPage = () => {
 													<Grid item>
 														<Box
 															sx={{
-																bgcolor:
-																	level?.color,
+																bgcolor: level?.color,
 																width: 350,
 																height: 8,
-																borderRadius:
-																	"7px",
+																borderRadius: "7px",
 															}}
 														/>
 													</Grid>
@@ -261,6 +247,7 @@ const PasswordResetPage = () => {
 													</Grid>
 												</Grid>
 											</FormControl>
+											)}
 										</Grid>
 
 										{/* passwordConfirm */}
@@ -310,7 +297,6 @@ const PasswordResetPage = () => {
 															</IconButton>
 														</InputAdornment>
 													}
-													placeholder="******"
 													inputProps={{}}
 												/>
 												{touched.passwordConfirm &&

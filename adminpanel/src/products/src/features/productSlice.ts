@@ -3,7 +3,10 @@ import { baseApiSlice } from "../../../common/src/features/baseApiSlice";
 export const productApiSlice = baseApiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllProducts: builder.query({
-            query: (page?) => `products/all?page=${page}`,
+            query: (page?: number | void) => {
+                const queryParams = page !== undefined ? `?page=${page}` : '';
+                return `/products/all${queryParams}`;
+            },
             providesTags: ["Product"]
         }),
         createProduct: builder.mutation({
@@ -32,7 +35,23 @@ export const productApiSlice = baseApiSlice.injectEndpoints({
                 method: 'DELETE'
             }),
             invalidatesTags: ['Product']
-        })
+        }),
+        productImage: builder.mutation({
+            query: (formData: FormData) => ({
+                url: `/upload`,
+                method: 'POST',
+                body: formData,
+            }),
+            invalidatesTags: ['Product']
+        }),
+        productMultipleImages: builder.mutation({
+            query: (formData: FormData) => ({
+                url: '/uploads',
+                method: 'POST',
+                body: formData,
+            }),
+            invalidatesTags: ['Product']
+        }),
     })
 })
 
@@ -41,5 +60,7 @@ export const {
     useDeleteProductMutation, 
     useGetAllProductsQuery, 
     useGetSingleProductQuery, 
-    useUpdateProductMutation 
+    useUpdateProductMutation,
+    useProductImageMutation, 
+    useProductMultipleImagesMutation,
 } = productApiSlice;

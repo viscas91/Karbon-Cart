@@ -4,7 +4,7 @@ import { Button, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const VerifiedPage = () => {
-	// useTitle("Verify User - MERN Invoice");
+	// useTitle("Verify User");
 	return (
 		<Stack
 			direction="column"

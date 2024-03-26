@@ -25,6 +25,11 @@ import { checkAuth } from '../middlewares/isAuthenticated';
 import { brandRouter } from '../routes/brands.routes';
 import { OrderRouter } from '../routes/order.routes';
 import { UserRouter } from '../routes/user.routes';
+import { PaymentRouter } from '../routes/payment.routes';
+import { upload } from '../utils/multer';
+import { BadRequestError } from '../utils/errors/badRequest';
+import { ProductImage } from '../models/mysql/Product';
+import { SiteRouter } from '../routes/site.routes';
 
 const sqliteStore = seq(session.Store);
 
@@ -40,6 +45,8 @@ dotenv.config();
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
 }
+
+app.use('/media/', express.static(path.join(__dirname, '..', 'uploads')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -69,15 +76,25 @@ app.get('/', async (req: Request, res: Response) => {
     res.send("index")
 });
 
+app.post('/api/v1/upload', upload.single('file'), (req: Request, res: Response) => {
+    res.json({ message: 'Files uploaded successfully', uploadedFileName: req.file!.filename });
+});
+
+app.post('/api/v1/uploads', upload.array('files'), (req: Request, res: Response) => {
+    return res.json('Files uploaded successfully');
+});
+
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/categories', categoryRouter);
-app.use('/api/v1/subcategories', subCategoryRouter);
-app.use('/api/v1/childcategories', childCategoryRouter);
-app.use('/api/v1/brands', brandRouter);
+app.use('/api/v1/categories', checkAuth, categoryRouter);
+app.use('/api/v1/subcategories', checkAuth, subCategoryRouter);
+app.use('/api/v1/childcategories', checkAuth, childCategoryRouter);
+app.use('/api/v1/brands', checkAuth, brandRouter);
 app.use('/api/v1/products', checkAuth, productRouter);
 app.use('/api/v1/vendors', vendorRouter);
 app.use('/api/v1/cart', CartRouter);
-app.use('/api/v1/orders', OrderRouter);
+app.use('/api/v1/orders', checkAuth, OrderRouter);
+app.use('/api/v1/payments', checkAuth, PaymentRouter);
+app.use('/api/v1/site', checkAuth, SiteRouter);
 app.use('/api/v1/users', UserRouter);
 
 app.use(express.static(path.join(__dirname, "..", "..", '..', "adminpanel/dist")));

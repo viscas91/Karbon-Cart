@@ -6,8 +6,10 @@ import { Category, ChildCategory, SubCategory } from "../../models/mysql/Categor
 // $-auth    Private
 
 export const getAllCategories = async (req: Request, res: Response) => {
-	const pageSize = 10;
-	const page = Number(req.query.page) || 1;
+	const page = Number(req.query.page);
+	const pageSize = Number(req.query.pageSize);
+
+	console.log(page, pageSize)
 
 	const limit = page ? pageSize : undefined;
   	const offset = page ? pageSize * (page - 1) : undefined;
@@ -23,14 +25,14 @@ export const getAllCategories = async (req: Request, res: Response) => {
 
 	return res.json({
 		success: true,
-		categoriesCount: categories.count,
+		count: categories.count,
 		numberOfPages: Math.ceil(categories.count / pageSize),
 		categories: categories.rows,
 	});
 };
 
 export const getAllSubCategories = async (req: Request, res: Response) => {
-	const pageSize = 10;
+	const pageSize = Number(req.query.pageSize) || 10;
 	const page = Number(req.query.page) || 1;
 
 	const limit = page ? pageSize : undefined;
@@ -47,14 +49,14 @@ export const getAllSubCategories = async (req: Request, res: Response) => {
 
 	return res.json({
 		success: true,
-		subCategoriesCount: categories.count,
+		count: categories.count,
 		numberOfPages: Math.ceil(categories.count / pageSize),
 		subCategories: categories.rows,
 	});
 };
 
 export const getAllSubCategoriesByCategoryID = async (req: Request, res: Response) => {
-	const pageSize = 10;
+	const pageSize = Number(req.query.pageSize) || 10;
 	const page = Number(req.query.page) || 1;
 	const categoryId = req.params.categoryId
 
@@ -75,7 +77,7 @@ export const getAllSubCategoriesByCategoryID = async (req: Request, res: Respons
 
 	return res.json({
 		success: true,
-		subCategoriesCount: categories.count,
+		count: categories.count,
 		numberOfPages: Math.ceil(categories.count / pageSize),
 		subCategories: categories.rows,
 	});
@@ -98,7 +100,7 @@ export const getAllChildCategories = async (req: Request, res: Response) => {
 
 	return res.json({
 		success: true,
-		childCategoriesCount: categories.count,
+		count: categories.count,
 		numberOfPages: Math.ceil(categories.count / pageSize),
 		childCategories: categories.rows,
 	});
@@ -126,7 +128,7 @@ export const getAllChildCategoriesByCategoryID = async (req: Request, res: Respo
 
 	return res.json({
 		success: true,
-		subCategoriesCount: categories.count,
+		count: categories.count,
 		numberOfPages: Math.ceil(categories.count / pageSize),
 		subCategories: categories.rows,
 	});

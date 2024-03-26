@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCreateSubCategoryMutation, useGetAllCategoriesQuery } from "../features/categorySlice";
+import { useCategoryImageMutation, useCreateSubCategoryMutation, useGetAllCategoriesQuery } from "../features/categorySlice";
 import { useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from 'yup';
@@ -10,10 +10,12 @@ const SubCategoryCreate: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     // const goback = () => navigate(-1);
+    const [ico, setIco] = useState<File>();
 
-    const from = location.state?.from?.pathname || "/subcategories";
+    const from = location.state?.from?.pathname || "/admin/subcategories";
 
     const [createSubCategory, { isSuccess, isLoading }] = useCreateSubCategoryMutation();
+    const [uploadImage, { isSuccess: isImageUploadSuccess, isLoading: isImageUploading }] = useCategoryImageMutation();
     const [categories, setCategories] = useState<CategoryType[]>([]);
 
     const { data: categoriesData, isLoading: isCatLoading } = useGetAllCategoriesQuery();
@@ -34,7 +36,7 @@ const SubCategoryCreate: React.FC = () => {
                 initialValues={{
                     title: '',
                     icon: '',
-                    categoryId: null
+                    categoryId: 0
                 }}
 
                 validationSchema={
@@ -62,6 +64,10 @@ const SubCategoryCreate: React.FC = () => {
                 onSubmit={async (values, { setStatus, setSubmitting }) => {
                     try {
                         await createSubCategory(values).unwrap();
+                        const formData = new FormData();
+                        formData.append('file', ico as File);
+                        
+                        await uploadImage(formData).unwrap();
                         setStatus({ success: true });
                         setSubmitting(false);
                     } catch (err: any) {
@@ -77,6 +83,7 @@ const SubCategoryCreate: React.FC = () => {
                     handleBlur,
                     handleChange,
                     handleSubmit,
+                    setFieldValue,
                     touched,
                     values,
                 }) => (
@@ -118,7 +125,7 @@ const SubCategoryCreate: React.FC = () => {
                                                 </Box>
 
                                                 <Box>
-                                                <FormControl>
+                                                <FormControl sx={{ width: '100%' }}>
                                                             <InputLabel htmlFor='categoryID'>Category</InputLabel>
                                                             <Select
                                                                 fullWidth
@@ -129,7 +136,7 @@ const SubCategoryCreate: React.FC = () => {
                                                                 )}
                                                                 id="categoryID"
                                                                 type="text"
-                                                                value={values.categoryId}
+                                                                value={values.categoryId || ''}
                                                                 name="categoryId"
                                                                 onBlur={handleBlur}
                                                                 onChange={handleChange}
@@ -158,13 +165,19 @@ const SubCategoryCreate: React.FC = () => {
                                                         type='file'
                                                         name="icon"
                                                         onBlur={handleBlur}
-                                                        onChange={handleChange}
+                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                            handleChange(event);
+                                                            const file = event.target.files?.[0]!;
+                                                            setFieldValue("icon", file.name);
+                                                            setIco(file)
+                                                        }}
                                                         fullWidth
                                                         error={Boolean(
                                                             touched.icon &&
                                                             errors.icon
                                                         )}
                                                     />
+                                                    {isImageUploading || isImageUploadSuccess}
                                                     {touched.icon &&
                                                     errors.icon && (
                                                         <FormHelperText

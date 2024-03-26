@@ -1,12 +1,9 @@
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-// import TextField from '@mui/material/TextField';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useCreateProductMutation } from '../features/productSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useCreateProductMutation, useProductImageMutation, useProductMultipleImagesMutation } from '../features/productSlice';
 import { useEffect, useState } from 'react';
-import { Button, Container, FormControl, FormHelperText, Grid, InputLabel, MenuItem, OutlinedInput, Paper, Select, Stack } from '@mui/material';
+import { Button, Container, FormControl, FormHelperText, Grid, InputLabel, MenuItem, OutlinedInput, Paper, Select, Stack, Box, Typography } from '@mui/material';
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -26,7 +23,6 @@ interface CategoryType {
 const ProductCreate: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { productId } = useParams();
     const goback = () => navigate(-1);
 
     const [categoryId, setCategoryId] = useState<number>();
@@ -34,14 +30,18 @@ const ProductCreate: React.FC = () => {
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [subCategories, setSubCategories] = useState<SubCategoryType[]>([]);
     const [childCategories, setChildCategories] = useState<ChildCategoryType[]>([]);
+    const [productThumb, setProductThumb] = useState<File>();
+    const [productImages, setProductImages] = useState<File[]>([]);
 
-    const from = location.state?.from?.pathname || "/products";
+    const from = location.state?.from?.pathname || "/admin/products";
 
     const [createProduct, { isSuccess, isLoading }] = useCreateProductMutation();
     const { data: categoriesData, isLoading: isCatLoading } = useGetAllCategoriesQuery();
     const { data: subCategoriesData, isLoading: isSubCatLoading } = useGetAllSubCategoriesByCategoryIdQuery(categoryId);
     const { data: childCategoriesData, isLoading: isChildCatLoading } = useGetAllChildCategoriesQuery();
-
+    const [uploadImage, { isSuccess: isImageUploadSuccess, isLoading: isImageUploading }] = useProductImageMutation();
+    const [uploadImages, { isSuccess: isImageMultipleUploadSuccess, isLoading: isMultipleImagesUploading }] = useProductMultipleImagesMutation();
+    
     useEffect(() => {
         if (categoriesData && !isCatLoading) {
             setCategories(categoriesData?.categories);
@@ -77,8 +77,8 @@ const ProductCreate: React.FC = () => {
                 thumb: '',
                 vendorId: '',
                 categoryId: '',
-                subCategoryId: '',
-                childCategoryId: '',
+                subCategoryId: null,
+                childCategoryId: null,
                 brandId: '',
                 quantity: '',
                 shortDescription: '',
@@ -91,7 +91,8 @@ const ProductCreate: React.FC = () => {
                 productType: '',
                 status: '',
                 seoTitle: '',
-                seoDescription: ''
+                seoDescription: '',
+                productImages: []
             }}
                 validationSchema={Yup.object().shape({
                     title: Yup.string().max(255).required("Product is required"),
@@ -99,8 +100,8 @@ const ProductCreate: React.FC = () => {
                     thumb: Yup.mixed().required('Thumbnail is required'),
                     vendorId: Yup.number().required('Vendor is required'),
                     categoryId: Yup.number().required('Category is required'),
-                    subCategoryId: Yup.number().positive(),
-                    childCategoryId: Yup.number().positive(),
+                    subCategoryId: Yup.number().positive().nullable(),
+                    childCategoryId: Yup.number().positive().nullable(),
                     brandId: Yup.number().positive().required('Brand is required'),
                     quantity: Yup.number().positive().min(1).required('Quantity is required'),
                     shortDescription: Yup.string().required('Short description is required'),
@@ -114,12 +115,31 @@ const ProductCreate: React.FC = () => {
                     status: Yup.string(),
                     seoTitle: Yup.string(),
                     seoDescription: Yup.string(),
+                    productImages: Yup.array().of(Yup.string()),
                 })}
 
                 onSubmit={async (values, { setStatus, setSubmitting }) => {
                     console.log(values)
                     try {
-                        await createProduct(values).unwrap();
+                        const res = await createProduct(values).unwrap();
+                        const productImagesFormData = new FormData();
+                        
+                        productImages.forEach((image) => {
+                            productImagesFormData.append('files', image as File)
+                        });
+
+                        productImagesFormData.append('productId', res.id);
+
+                        console.log('product image formData', productImagesFormData);
+                        console.log('product images usestate', productImages)
+
+                        const formData = new FormData();
+                        formData.append('file', productThumb as File);
+
+                        console.log('thumb formdata', formData);
+                        
+                        await uploadImage(formData).unwrap();
+                        await uploadImages(productImagesFormData).unwrap();
                         setStatus({ success: true });
                         setSubmitting(false);
                     } catch (err: any) {
@@ -135,6 +155,7 @@ const ProductCreate: React.FC = () => {
                     handleBlur,
                     handleChange,
                     handleSubmit,
+                    setFieldValue,
                     touched,
                     values,
                 }) => (
@@ -143,7 +164,7 @@ const ProductCreate: React.FC = () => {
                             component='main'
                         >
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>{productId ? 'Edit Product' : 'Add New Product'}</Typography>
+                                <Typography variant="h1" fontSize="1.3rem" fontWeight="bold" sx={{ my: 2 }}>Add New Product</Typography>
 
                                 <Box>
                                     <Button
@@ -160,7 +181,7 @@ const ProductCreate: React.FC = () => {
                                 </Box>
                             </Box>
                             <Paper variant="outlined" sx={{ p: 3 }}>
-                                <Box component='form' noValidate autoComplete='off' onSubmit={handleSubmit}>
+                                <Box component='form' noValidate onSubmit={handleSubmit}>
                                     <Grid container>
                                         <Grid item xs={12}>
                                         </Grid>
@@ -236,9 +257,15 @@ const ProductCreate: React.FC = () => {
                                                                 type="file"
                                                                 name="thumb"
                                                                 onBlur={handleBlur}
-                                                                onChange={handleChange}
+                                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    handleChange(event);
+                                                                    const file = event.target.files?.[0]!;
+                                                                    setFieldValue("thumb", file.name);
+                                                                    setProductThumb(file)
+                                                                  }}
                                                                 placeholder="Product Thumbnail"
                                                             />
+                                                            {isImageUploadSuccess || isImageUploading}
                                                             {touched.thumb &&
                                                                 errors.thumb && (
                                                                     <FormHelperText
@@ -250,7 +277,7 @@ const ProductCreate: React.FC = () => {
                                                                 )}
 
                                                             <FormControl error={Boolean(touched.vendorId && errors.vendorId)}>
-                                                                <InputLabel htmlFor='product-vendor-label'>Vendor*</InputLabel>
+                                                                <InputLabel htmlFor='product-vendor-label'>Vendor</InputLabel>
                                                                 <Select
                                                                     fullWidth
                                                                     required
@@ -724,6 +751,41 @@ const ProductCreate: React.FC = () => {
                                                                     </FormHelperText>
                                                                 )}
 
+                                                            <InputLabel htmlFor='product-images'>Product Images</InputLabel>
+                                                            <OutlinedInput
+                                                                required
+                                                                fullWidth
+                                                                error={Boolean(
+                                                                    touched.productImages &&
+                                                                    errors.productImages
+                                                                )}
+                                                                id="product-images"
+                                                                type="file"
+                                                                name="productImages"
+                                                                onBlur={handleBlur}
+                                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    handleChange(event);
+                                                                    const files = Array.from(event.target.files!);
+                                                                    let newArr = files.map((image) => image.name)
+                                                                    setFieldValue("productImages", newArr);
+                                                                    setProductImages(files);
+                                                                }}
+                                                                placeholder="Product Images"
+                                                                inputProps={{
+                                                                    multiple: true
+                                                                }}
+                                                            />
+                                                            {isImageMultipleUploadSuccess || isMultipleImagesUploading}
+                                                            {touched.productImages &&
+                                                                errors.productImages && (
+                                                                    <FormHelperText
+                                                                        error
+                                                                        id="helper-text-product-images"
+                                                                    >
+                                                                        {errors.productImages}
+                                                                    </FormHelperText>
+                                                                )}
+
                                                             <Grid item xs={12}>
                                                                 <Button
                                                                     sx={{
@@ -751,7 +813,6 @@ const ProductCreate: React.FC = () => {
                                                                         !values.price ||
                                                                         !values.productType ||
                                                                         !values.status ||
-
                                                                         !values.seoTitle ||
                                                                         !values.seoDescription
                                                                     }

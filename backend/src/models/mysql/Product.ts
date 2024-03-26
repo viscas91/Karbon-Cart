@@ -4,9 +4,17 @@ import { ProductType } from '../../utils/types/product.types';
 import { User } from './User';
 import { v4 as uuidV4 } from 'uuid';
 
-interface ProductCreationAttributes extends Optional<ProductType, 'pkid'> { }
+type ProductImageType = {
+    id?: number;
+    image: string;
+    product: string;
+}
 
+interface ProductCreationAttributes extends Optional<ProductType, 'pkid'> { }
 interface ProductInstance extends Model<ProductType, ProductCreationAttributes>, ProductType { }
+
+interface ProductImageCreationAttributes extends Optional<ProductImageType, 'id'> { }
+interface ProductImageInstance extends Model<ProductImageType, ProductImageCreationAttributes>, ProductImageType { }
 
 export const Product = sequelize.define<ProductInstance>(
     'Product',
@@ -152,6 +160,29 @@ export const Product = sequelize.define<ProductInstance>(
     {
         timestamps: true,
         tableName: 'products',
+        freezeTableName: true,
+    }
+);
+
+export const ProductImage = sequelize.define<ProductImageInstance>(
+    'ProductImage',
+    {
+        image: {
+            allowNull: false,
+            type: DataTypes.STRING,
+        },
+        product: {
+            allowNull: false,
+            type: DataTypes.UUID,
+            references: {
+                model: Product,
+                key: 'id'
+            }
+        },
+    },
+    {
+        timestamps: true,
+        tableName: 'product_images',
         freezeTableName: true,
     }
 );

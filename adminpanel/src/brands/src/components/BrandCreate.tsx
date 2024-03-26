@@ -10,7 +10,7 @@ const BrandCreate: React.FC = () => {
     const location = useLocation();
     // const goback = () => navigate(-1);
 
-    const from = location.state?.from?.pathname || "/brands";
+    const from = location.state?.from?.pathname || "/admin/brands";
 
     const [createBrand, { isSuccess, isLoading }] = useCreateBrandMutation();
 
@@ -85,9 +85,8 @@ const BrandCreate: React.FC = () => {
                                                 <TextField
                                                     required 
                                                     id='title'
-                                                    type='text'
                                                     name="title"
-                                                    label='title'
+                                                    label='Title'
                                                     value={values.title}
                                                     onBlur={handleBlur}
                                                     onChange={handleChange}

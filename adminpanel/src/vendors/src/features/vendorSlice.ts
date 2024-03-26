@@ -3,7 +3,10 @@ import { baseApiSlice } from "../../../common/src/features/baseApiSlice";
 export const vendorApiSlice = baseApiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllVendors: builder.query({
-            query: (page = 1) => `vendors/all?page=${page}`,
+            query: (page?: number | void) => {
+                const queryParams = page !== undefined ? `?page=${page}` : '';
+                return `/vendors/all${queryParams}`;
+            },
             providesTags: ["Vendor"]
         }),
         createVendor: builder.mutation({
@@ -32,6 +35,14 @@ export const vendorApiSlice = baseApiSlice.injectEndpoints({
                 method: 'DELETE'
             }),
             invalidatesTags: ['Vendor']
+        }),
+        vendorImage: builder.mutation({
+            query: (formData: FormData) => ({
+                url: `/upload`,
+                method: 'POST',
+                body: formData,
+            }),
+            invalidatesTags: ['Vendor']
         })
     })
 })
@@ -42,4 +53,5 @@ export const {
     useGetSingleVendorQuery,
     useUpdateVendorMutation,
     useDeleteProductMutation,
+    useVendorImageMutation
 } = vendorApiSlice;

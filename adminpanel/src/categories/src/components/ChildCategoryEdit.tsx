@@ -49,7 +49,7 @@ const ChildCategoryEdit: React.FC = () => {
 
     useEffect(() => {
         if (isUpdateSuccess) {
-            navigate('/childcategories');
+            navigate('/admin/childcategories');
         }
     }, [isUpdateSuccess, navigate, updateData]);
 
